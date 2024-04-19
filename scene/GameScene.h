@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Audio.h"
-#include "DebugCamera.h"
+#include <DebugCamera.h>
 #include "DirectXCommon.h"
 #include "Input.h"
 #include "Model.h"
