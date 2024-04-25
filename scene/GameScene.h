@@ -9,7 +9,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include <vector>
-
+#include"DebugCamera.h"
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -60,10 +60,14 @@ private: // メンバ変数
 
 	// 自キャラ
 	Player* player_ = nullptr;
+
 	//可変個配列
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 
-	
+	//デバックカメラ有効
+	bool isDebugCameraActive_ = false;
+	//デバックカメラ
+	DebugCamera* debugCamera_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用

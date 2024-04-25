@@ -13,9 +13,12 @@ GameScene::~GameScene() {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			delete worldTransformBlock;
 		}
+
 	}
 	worldTransformBlocks_.clear();
+
 }
+
 
 void GameScene::Initialize() {
 
@@ -42,29 +45,32 @@ void GameScene::Initialize() {
 	player_->Initialize(model_, textureHandle_, &viewProjection_);
 	
 	//要素数
-	const uint32_t knumBlockVirtical = 10;
+	const uint32_t kNumBlockVirtical = 10;
 	const uint32_t kNumBlockHorizontal = 20;
 	//ブロック1個分の横幅
 	const float kBlockWidth = 2.0f;
 	const float kBlockHeight = 2.0f;
+
 	//要素数を変更する
-	worldTransformBlocks_.resize(kNumBlockHorizontal);
-	for (uint32_t i = 0; i < knumBlockVirtical; ++i) {
+	// 列数を設定(縦のブロック数)
+	worldTransformBlocks_.resize(kNumBlockVirtical);
+	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
+		// 列数を設定(横のブロック数)
 		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
 	}
-	//キューブの生成
 
-	for (uint32_t i = 0; i < kNumBlockHorizontal; ++i) {
+	//キューブの生成
+	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
 		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
 			worldTransformBlocks_[i][j] = new WorldTransform();
 			worldTransformBlocks_[i][j]->Initialize();
-			worldTransformBlocks_[i][j]->translation_.x = kBlockWidth * i;
-			worldTransformBlocks_[i][j]->translation_.y =kBlockHeight* 0.0f;
-
+			worldTransformBlocks_[i][j]->translation_.x = kBlockWidth * j;
+			worldTransformBlocks_[i][j]->translation_.y = kBlockHeight * i;
 		}
-
 	}
 
+	//デバックカメラの生成
+	debugCamera_ = new DebugCamera()
 
 }
 
@@ -76,17 +82,16 @@ void GameScene::Update() {
 	//ブロックの更新
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-
+			if (!worldTransformBlock)
+				continue;
 			worldTransformBlock->matWorld_ = MakeAffineMatrix(worldTransformBlock->scale_, worldTransformBlock->rotation_, worldTransformBlock->translation_);
-
 			worldTransformBlock->TransferMatrix();
 
 		}
 	}
-
-
-	
 }
+
+
 
 void GameScene::Draw() {
 
@@ -118,13 +123,15 @@ void GameScene::Draw() {
 	//自機の描画
 	//player_->Draw();
 
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) 
-	{
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine)
-		{
+	
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			blockmodel_->Draw(*worldTransformBlock, viewProjection_);
 		}
 	}
+		
+		
+
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
