@@ -51,6 +51,7 @@ private: // メンバ変数
 
 	// 3Dモデル
 	Model* model_ = nullptr;
+	Model* blockmodel_ = nullptr;
 
 	// ワールドトランスフォーム
 	WorldTransform worldTransform_;
@@ -59,6 +60,10 @@ private: // メンバ変数
 
 	// 自キャラ
 	Player* player_ = nullptr;
+	//可変個配列
+	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
+
+	
 
 	/// <summary>
 	/// ゲームシーン用

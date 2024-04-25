@@ -1,6 +1,5 @@
 #include "Player.h"
 #include "cassert"
-
 void Player::Initialize(Model* model, uint32_t textureHandle, ViewProjection* viewProjection) {
 
 	// NULLポインタチェック
@@ -19,6 +18,7 @@ void Player::Update() {
 	// 行列の転送
 	worldTransform_.matWorld_;
 	worldTransform_.TransferMatrix();
+
 }
 
 void Player::Draw() {
