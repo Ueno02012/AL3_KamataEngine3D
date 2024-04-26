@@ -34,6 +34,10 @@ public:
 	void SetNearZ(float value) { viewProjection_.nearZ = value; }
 	void SetFarZ(float value) { viewProjection_.farZ = value; }
 
+	const Matrix4x4& GetView() { return viewProjection_.matView; }
+
+	const Matrix4x4& GetProjection() { return viewProjection_.matProjection; }
+
 private:
 	// 入力クラスのポインタ
 	Input* input_;
