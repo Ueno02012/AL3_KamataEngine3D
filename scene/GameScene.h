@@ -5,6 +5,7 @@
 #include "Input.h"
 #include "Model.h"
 #include "Player.h"
+#include"Skydome.h"
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
@@ -53,14 +54,16 @@ private: // メンバ変数
 	Model* model_ = nullptr;
 	Model* blockmodel_ = nullptr;
 
+	Model* modelSkydome_ = nullptr;
+
 	// ワールドトランスフォーム
-	WorldTransform worldTransform_;
+	//WorldTransform worldTransform_;
 	// ビュープロジェクション
 	ViewProjection viewProjection_;
 
 	// 自キャラ
 	Player* player_ = nullptr;
-
+	Skydome* skydome_ = nullptr;
 	//可変個配列
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 

@@ -7,7 +7,7 @@ class Player {
 public:
 
 	/*初期化*/
-	void Initialize(Model* model, uint32_t textureHandle, ViewProjection* viewProjection);
+	void Initialize(Model* model, ViewProjection* viewProjection);
 	//更新
 	void Update();
 	//描画

@@ -10,6 +10,7 @@ GameScene::~GameScene() {
 	delete player_;
 	delete blockmodel_;
 	delete debugCamera_;
+	delete modelSkydome_;
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			delete worldTransformBlock;
@@ -30,21 +31,32 @@ void GameScene::Initialize() {
 	//自機の初期化
 
 	//テクスチャを読み込む
-	textureHandle_ = TextureManager::Load("uvChecker.png");
+	//textureHandle_ = TextureManager::Load("uvChecker.png");
 
 	//3Dモデルの生成
-	model_ = Model::Create();
-	//3Dモデル(Block)の生成
+	model_ = Model::CreateFromOBJ("Chara",true);
+	//3Dモデル(Skydome)の生成
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	
+	// 3Dモデル(Block)の生成
 	blockmodel_ = Model::Create();
 	//ワールドトランスフォームの初期化
-	worldTransform_.Initialize();
+	//worldTransform_.Initialize();
+	
+	 
 	//ビュープロジェクションの初期化
+	viewProjection_.farZ = 320;
 	viewProjection_.Initialize();
 	//自機の生成
 	player_ = new Player();
+
+	skydome_ = new Skydome();
 	//自機の初期化
-	player_->Initialize(model_, textureHandle_, &viewProjection_);
+	player_->Initialize(model_,&viewProjection_);
 	
+	//Skydoneの初期化
+	skydome_->Intialize(modelSkydome_, &viewProjection_);
+
 	//要素数
 	const uint32_t kNumBlockVirtical = 10;
 	const uint32_t kNumBlockHorizontal = 20;
@@ -68,7 +80,7 @@ void GameScene::Initialize() {
 				worldTransformBlocks_[i][j]->Initialize();
 				worldTransformBlocks_[i][j]->translation_.x = kBlockWidth * j;
 				worldTransformBlocks_[i][j]->translation_.y = kBlockHeight * i;
-
+				
 			}
 		}
 	}
@@ -82,7 +94,9 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 
 	////自機の更新
-	//player_->Update(); 
+	player_->Update(); 
+	
+	skydome_->Update();
 
 	//ブロックの更新
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
@@ -144,8 +158,7 @@ void GameScene::Draw() {
 	/// </summary>
 
 	//自機の描画
-	//player_->Draw();
-
+	player_->Draw();
 	
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -156,7 +169,8 @@ void GameScene::Draw() {
 		}
 	}
 		
-		
+	skydome_->Draw();
+
 
 
 	// 3Dオブジェクト描画後処理
