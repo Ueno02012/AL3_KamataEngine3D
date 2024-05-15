@@ -6,13 +6,12 @@
 
 class Skydome {
 public:
+	Skydome();
+	~Skydome();
+
 	void Intialize(Model* model, ViewProjection* viewProjection);
 
-
-
 	void Update();
-
-
 
 	void Draw();
 

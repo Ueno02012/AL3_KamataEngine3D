@@ -1,6 +1,10 @@
 #include "Skydome.h"
 #include "cassert"
 
+Skydome::Skydome() {}
+Skydome::~Skydome() {
+}
+
 void Skydome::Intialize(Model* model, ViewProjection* viewProjection) { 
 	assert(model);
 	model_ = model;

@@ -4,13 +4,14 @@
 #include<cmath>
 #include"Matrix.h"
 GameScene::GameScene() {}
-
 GameScene::~GameScene() { 
 	delete model_;
 	delete player_;
 	delete blockmodel_;
 	delete debugCamera_;
 	delete modelSkydome_;
+	delete skydome_;
+
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			delete worldTransformBlock;
@@ -20,6 +21,7 @@ GameScene::~GameScene() {
 	worldTransformBlocks_.clear();
 
 }
+
 
 
 void GameScene::Initialize() {
