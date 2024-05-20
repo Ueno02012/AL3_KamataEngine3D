@@ -3,6 +3,7 @@
 #include <cassert>
 #include<cmath>
 #include"Matrix.h"
+
 GameScene::GameScene() {}
 
 GameScene::~GameScene() { 
@@ -11,6 +12,7 @@ GameScene::~GameScene() {
 	delete blockmodel_;
 	delete debugCamera_;
 	delete modelSkydome_;
+	delete mapChipField_;
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			delete worldTransformBlock;
@@ -20,6 +22,31 @@ GameScene::~GameScene() {
 	worldTransformBlocks_.clear();
 
 }
+void GameScene::GenerateBlocks() {
+	// 要素数
+	uint32_t numBlockVirtical = mapChipField_->GetNumBlockVirtical();
+	uint32_t numBlockHorizontal = mapChipField_->GetNumBlockHorizontal();
+
+	// 要素数を変更する
+	//  列数を設定(縦のブロック数)
+	worldTransformBlocks_.resize(numBlockVirtical);
+	for (uint32_t i = 0; i < numBlockVirtical; ++i) {
+		// 列数を設定(横のブロック数)
+		worldTransformBlocks_[i].resize(numBlockHorizontal);
+	}
+
+	// キューブの生成
+	for (uint32_t i = 0; i < numBlockVirtical; ++i) {
+		for (uint32_t j = 0; j < numBlockHorizontal; ++j) {
+			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlock) {
+				WorldTransform* worldTransform = new WorldTransform();
+				worldTransform->Initialize();
+				worldTransformBlocks_[i][j] = worldTransform;
+				worldTransformBlocks_[i][j]->translation_ = mapChipField_->GetMapChipPositionByIndex(j, i);
+			}
+		}
+	}
+}
 
 
 void GameScene::Initialize() {
@@ -27,7 +54,6 @@ void GameScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
-
 	//自機の初期化
 
 	//テクスチャを読み込む
@@ -49,47 +75,25 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 	//自機の生成
 	player_ = new Player();
-
+	//天球の生成
 	skydome_ = new Skydome();
+
+	mapChipField_ = new MapChipField;
+	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
+
 	//自機の初期化
 	player_->Initialize(model_,&viewProjection_);
 	
 	//Skydoneの初期化
 	skydome_->Intialize(modelSkydome_, &viewProjection_);
 
-	//要素数
-	const uint32_t kNumBlockVirtical = 10;
-	const uint32_t kNumBlockHorizontal = 20;
-	//ブロック1個分の横幅
-	const float kBlockWidth = 2.0f;
-	const float kBlockHeight = 2.0f;
-
-	//要素数を変更する
-	// 列数を設定(縦のブロック数)
-	worldTransformBlocks_.resize(kNumBlockVirtical);
-	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
-		// 列数を設定(横のブロック数)
-		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
-	}
-
-	//キューブの生成
-	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
-		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
-			if (i % 2 == 1 && j % 2 == 1 || i % 2 == 0 && j % 2 == 0) {
-				worldTransformBlocks_[i][j] = new WorldTransform();
-				worldTransformBlocks_[i][j]->Initialize();
-				worldTransformBlocks_[i][j]->translation_.x = kBlockWidth * j;
-				worldTransformBlocks_[i][j]->translation_.y = kBlockHeight * i;
-				
-			}
-		}
-	}
 
 	//デバックカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
 
-
+	GenerateBlocks();
 }
+
 
 void GameScene::Update() {
 
@@ -190,3 +194,4 @@ void GameScene::Draw() {
 
 #pragma endregion
 }
+
