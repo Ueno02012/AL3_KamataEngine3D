@@ -64,7 +64,7 @@ void GameScene::Initialize() {
 	//textureHandle_ = TextureManager::Load("uvChecker.png");
 
 	//3Dモデルの生成
-	model_ = Model::CreateFromOBJ("Chara",true);
+	model_ = Model::CreateFromOBJ("Player",true);
 	//3Dモデル(Skydome)の生成
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 	
@@ -85,8 +85,10 @@ void GameScene::Initialize() {
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
 
+	//座標をマップチップ番号で指定
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(5, 15);
 	//自機の初期化
-	player_->Initialize(model_,&viewProjection_);
+	player_->Initialize(model_,&viewProjection_,playerPosition);
 	
 	//Skydoneの初期化
 	skydome_->Intialize(modelSkydome_, &viewProjection_);
