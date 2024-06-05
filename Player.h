@@ -12,6 +12,8 @@ public:
 
 	void Draw(ViewProjection& viewProjection);
 
+	
+
 private:
 
 	WorldTransform worldTransform_;
@@ -22,6 +24,6 @@ private:
 
 	Input* input_ = nullptr;
 
-
+	const float kRotSpeed = 0.02f;
 
 };
