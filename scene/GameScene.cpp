@@ -55,6 +55,7 @@ void GameScene::Update() {
 		debugCamera_->Update();
 
 		viewProjection_.matView = debugCamera_->DebugCamera::GetView();
+		viewProjection_.matProjection = debugCamera_->DebugCamera::GetProjection();
 	}
 
 
