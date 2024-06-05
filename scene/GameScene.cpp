@@ -23,7 +23,7 @@ void GameScene::Initialize() {
 	model_ = Model::Create();
 
 	// ワールドトランスフォームの初期化
-	//worldTransform_.Initialize();
+	worldTransform_.Initialize();
 
 	viewProjection_.Initialize();
 
