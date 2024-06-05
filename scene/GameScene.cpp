@@ -36,9 +36,7 @@ void GameScene::Initialize() {
 	player_->Initialize(model_,textureHandle_);
 
 
-	//ライン描画が参照するビュープロジェクションを指定する(アドレス渡し)
-	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
-
+	
 	// デバッグカメラの生成
 	//debugCamera_ = new DebugCamera(1280, 720);
 

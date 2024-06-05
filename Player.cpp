@@ -9,6 +9,9 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 	worldTransform_.Initialize();
 }
 
-void Player::Update() {}
+void Player::Update() {
+	//行列を定義バッファに転送
+	worldTransform_.TransferMatrix(); 
+}
 
 void Player::Draw() {}
