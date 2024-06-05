@@ -55,7 +55,7 @@ private: // メンバ変数
 	Player* player_ = nullptr;
 
 	// ワールドトランスフォーム
-	//WorldTransform worldTransform_;
+	WorldTransform worldTransform_;
 	// ビュープロジェクション
 	ViewProjection viewProjection_;
 
