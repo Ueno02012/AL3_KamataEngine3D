@@ -11,6 +11,7 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 
 void Player::Update() {
 	//行列を定義バッファに転送
+	worldTransform_.matWorld_;
 	worldTransform_.TransferMatrix(); 
 }
 
