@@ -1,6 +1,8 @@
 #include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
+#include "AxisIndicator.h"
+
 GameScene::GameScene() {}
 
 GameScene::~GameScene() { 
@@ -36,6 +38,11 @@ void GameScene::Initialize() {
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(300, 200);
 	
+	//軸方向表示の表示を有効にする
+	AxisIndicator::GetInstance()->SetVisible(true);
+	//軸方向表示が参照するビュープロジェクションを指定する(アドレス渡し)
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
+
 }
 
 void GameScene::Update() { 
@@ -56,6 +63,12 @@ void GameScene::Update() {
 
 		viewProjection_.matView = debugCamera_->DebugCamera::GetView();
 		viewProjection_.matProjection = debugCamera_->DebugCamera::GetProjection();
+
+		//ビュープロジェクション行列の転送
+		viewProjection_.TransferMatrix();
+	} else {
+		//ビュープロジェクション行列の更新と転送
+		viewProjection_.UpdateMatrix();
 	}
 
 
