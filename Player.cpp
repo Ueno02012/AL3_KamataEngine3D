@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Matrix.h"
 #include <cassert>
 void Player::Initialize(Model* model, uint32_t textureHandle) { 
 	assert(model);
@@ -41,6 +42,8 @@ void Player::Update() {
 	//座標移動(ベクトルの加算)
 	worldTransform_.translation_.x += move.x;
 	worldTransform_.translation_.y += move.y;
+
+	
 
 
 }
