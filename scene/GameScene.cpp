@@ -31,7 +31,7 @@ void GameScene::Initialize() {
 	player_ = new Player();
 
 	//自キャラの初期化
-	player_->Initialize();
+	player_->Initialize(Model* model,);
 
 
 	//ライン描画が参照するビュープロジェクションを指定する(アドレス渡し)
