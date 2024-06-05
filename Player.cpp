@@ -15,4 +15,4 @@ void Player::Update() {
 	worldTransform_.TransferMatrix(); 
 }
 
-void Player::Draw() {}
+void Player::Draw(ViewProjection& ) {}
