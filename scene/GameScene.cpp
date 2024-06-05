@@ -27,11 +27,13 @@ void GameScene::Initialize() {
 
 	viewProjection_.Initialize();
 
+
+
 	//自キャラの生成
 	player_ = new Player();
 
 	//自キャラの初期化
-	player_->Initialize(model_, &viewProjection_);
+	player_->Initialize(model_,textureHandle_);
 
 
 	//ライン描画が参照するビュープロジェクションを指定する(アドレス渡し)
