@@ -16,8 +16,12 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position) {
 	worldTransform_.translation_ = position;
 }
 
-void PlayerBullet::Update() {
-	
+void PlayerBullet::Update() { 
+	worldTransform_.UpdateMatrix();
 }
 
-void PlayerBullet::Draw(const ViewProjection& viewProjection) {}
+void PlayerBullet::Draw(const ViewProjection& viewProjection) {
+	
+	//モデルの描画
+	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+}

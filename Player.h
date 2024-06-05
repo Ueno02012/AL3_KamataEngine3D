@@ -2,7 +2,7 @@
 #include "Model.h"
 #include "WorldTransform.h"
 #include <Input.h>
-
+#include "PlayerBullet.h"
 class Player {
 
 public:
@@ -12,7 +12,12 @@ public:
 
 	void Draw(ViewProjection& viewProjection);
 
-	
+	/// <summary>
+	/// 攻撃
+	/// </summary>
+	void Attack();
+
+	WorldTransform& GetWorldTransform() { return worldTransform_; }
 
 private:
 
@@ -25,5 +30,9 @@ private:
 	Input* input_ = nullptr;
 
 	const float kRotSpeed = 0.02f;
+
+	//弾
+	PlayerBullet* bullet_ = nullptr;
+
 
 };
