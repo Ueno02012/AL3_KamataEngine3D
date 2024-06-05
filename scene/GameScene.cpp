@@ -7,9 +7,8 @@
 GameScene::GameScene() {}
 
 GameScene::~GameScene() { 
-	delete sprite_;
 	delete model_;
-	delete debugCamera_;
+	delete player_;
 }
 
 void GameScene::Initialize() {
@@ -19,61 +18,38 @@ void GameScene::Initialize() {
 	audio_ = Audio::GetInstance();
 	textureHandle_ = TextureManager::Load("uvChecker.png");
 
-	sprite_ = Sprite::Create(textureHandle_, {100, 50});
 
 	// 3Dモデルの生成
 	model_ = Model::Create();
 
 	// ワールドトランスフォームの初期化
-	worldTransform_.Initialize();
+	//worldTransform_.Initialize();
+
 	viewProjection_.Initialize();
 
-	// サウンドデータの読み込み
-	soundDataHandle_ = audio_->LoadWave("fanfare.wav");
-	// 音声再生
-	voiceHandle_ = audio_->PlayWave(soundDataHandle_,true);
+	//自キャラの生成
+	player_ = new Player();
+
+	//自キャラの初期化
+	player_->Initialize();
+
 
 	//ライン描画が参照するビュープロジェクションを指定する(アドレス渡し)
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
 
 	// デバッグカメラの生成
-	debugCamera_ = new DebugCamera(1280, 720);
+	//debugCamera_ = new DebugCamera(1280, 720);
 
-	// 軸方向表示の表示を有効にする
-	AxisIndicator::GetInstance()->SetVisible(true);
-	// 軸方向表示が参照するビュープロジェクションを指定する(アドレス渡し)
-	AxisIndicator::SetTargetViewProjection(&debugCamera_->GetViewProjection());
+	//// 軸方向表示の表示を有効にする
+	//AxisIndicator::GetInstance()->SetVisible(true);
+	//// 軸方向表示が参照するビュープロジェクションを指定する(アドレス渡し)
+	//AxisIndicator::SetTargetViewProjection(&debugCamera_->GetViewProjection());
 }
 
 void GameScene::Update() { 
-	// スプライトの今の座標を取得
-	Vector2 position = sprite_->GetPosition(); 
+	//自キャラの更新
+	player_->Update();
 
-	// 座標を{ 2, 1 }移動
-	position.x += 2.0f;
-	position.y += 1.0f;
-
-	//移動した座標をスプライトに反映
-	sprite_->SetPosition(position);
-
-	// スペースキーを押した瞬間
-	if (input_->TriggerKey(DIK_SPACE)) {
-		// 音声停止
-		audio_->StopWave(voiceHandle_);
-	}
-	// デバッグカメラの更新
-	debugCamera_->Update();
-
-	#ifdef _DEBUG
-	//デバッグテキストの表示
-	ImGui::Begin("Debug1");
-	ImGui::InputFloat3("InputFloat3",inputFloat3);
-	ImGui::SliderFloat3("SliderFloat3", inputFloat3, 0.01f, 1.0f);
-	ImGui::End();
-
-	// デモウィンドウの表示を有効化
-	ImGui::ShowDemoWindow();
-	#endif
 }
 
 void GameScene::Draw() {
@@ -89,7 +65,7 @@ void GameScene::Draw() {
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 
-	sprite_->Draw();
+	//sprite_->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -105,8 +81,8 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
-		// 3Dモデル描画
-	model_->Draw(worldTransform_, debugCamera_->GetViewProjection(), textureHandle_);
+	// 自キャラの描画
+	player_->Draw();
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
