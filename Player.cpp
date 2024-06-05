@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Matrix.h"
+#include "imgui.h"
 #include <cassert>
 void Player::Initialize(Model* model, uint32_t textureHandle) { 
 	assert(model);
@@ -39,6 +40,21 @@ void Player::Update() {
 		move.y -= kCharacterSpeed;
 	}
 
+	//移動限界座標
+	const float kMoveLimitX = 35.0f;
+	const float kMoveLimitY = 18.0f;
+
+	//範囲を超えない処理
+	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
+	worldTransform_.translation_.x = min(worldTransform_.translation_.x, +kMoveLimitX);
+	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
+	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
+
+
+
+
+
+
 	//座標移動(ベクトルの加算)
 	worldTransform_.translation_.x += move.x;
 	worldTransform_.translation_.y += move.y;
@@ -47,6 +63,9 @@ void Player::Update() {
 				
 	worldTransform_.TransferMatrix();
 
+	ImGui::Begin("Move");
+	ImGui::DragFloat3("Player", &worldTransform_.translation_.x, 0.01f);
+	ImGui::End();
 
 }
 

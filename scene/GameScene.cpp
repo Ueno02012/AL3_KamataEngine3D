@@ -6,6 +6,7 @@ GameScene::GameScene() {}
 GameScene::~GameScene() { 
 	delete model_;
 	delete player_;
+	delete debugCamera_;
 }
 
 void GameScene::Initialize() {
@@ -32,13 +33,30 @@ void GameScene::Initialize() {
 	//自キャラの初期化
 	player_->Initialize(model_,textureHandle_);
 
-
+	//デバッグカメラの生成
+	debugCamera_ = new DebugCamera(300, 200);
 	
 }
 
 void GameScene::Update() { 
 	//自キャラの更新
 	player_->Update();
+
+
+
+	#ifdef _DEBUG
+	if (input_->TriggerKey(DIK_RETURN)) {
+		isDebugCameraActive_ = true;
+	}
+	#endif
+
+	if (isDebugCameraActive_) {
+		// デバッグカメラの更新
+		debugCamera_->Update();
+
+		viewProjection_.matView=
+	}
+
 
 }
 

@@ -8,6 +8,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "Player.h"
+#include "DebugCamera.h"
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -62,8 +63,11 @@ private: // メンバ変数
 	// ImGuiで値を入力する変数
 	//float inputFloat3[3] = {0, 0, 0};
 
+	//デバッグカメラ有効
+	bool isDebugCameraActive_ = false;
+
 	// デバッグカメラ
-	//DebugCamera* debugCamera_ = nullptr;
+	DebugCamera* debugCamera_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用
