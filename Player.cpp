@@ -1,6 +1,14 @@
 #include "Player.h"
 #include "Matrix.h"
 #include <cassert>
+
+
+Player::~Player() {	
+	delete bullet_;
+
+}
+
+
 void Player::Initialize(Model* model, uint32_t textureHandle) {
 	assert(model);
 	// 引数として受け取ったデータをメンバ変数に記録
@@ -79,6 +87,13 @@ void Player::Draw(ViewProjection& viewProjection) {
 }
 void Player::Attack() {
 	if (input_->PushKey(DIK_SPACE)) {
+
+		// 弾があれば解放する
+		if (bullet_) {
+			delete bullet_;
+			bullet_ = nullptr;
+		}
+
 
 		// 弾を生成し、初期化
 		PlayerBullet* newBullet = new PlayerBullet();

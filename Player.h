@@ -6,6 +6,8 @@
 class Player {
 
 public:
+	~Player();
+
 	void Initialize(Model* model,uint32_t textureHandle);
 
 	void Update();
