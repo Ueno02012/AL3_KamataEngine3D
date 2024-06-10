@@ -38,8 +38,6 @@ private:
 	Input* input_ = nullptr;
 
 	const float kRotSpeed = 0.02f;
-
-
 	//弾
 	std::list<PlayerBullet*> bullets_;
 
