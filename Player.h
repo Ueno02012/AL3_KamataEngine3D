@@ -3,6 +3,8 @@
 #include "WorldTransform.h"
 #include <Input.h>
 #include "PlayerBullet.h"
+#include <list>
+
 class Player {
 
 public:
@@ -38,7 +40,7 @@ private:
 	const float kRotSpeed = 0.02f;
 
 	//弾
-	PlayerBullet* bullet_ = nullptr;
+	std::list<PlayerBullet*> bullets_;
 
 
 };

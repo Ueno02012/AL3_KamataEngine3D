@@ -5,7 +5,9 @@
 
 
 Player::~Player() { 
-	delete bullet_;
+	for (PlayerBullet* bullet : bullets_) {
+		delete bullets_->
+	}
 }
 
 
@@ -54,8 +56,9 @@ void Player::Update() {
 	Attack();
 
 	// 弾更新
-	if (bullet_) {
-		bullet_->Update();
+
+	for (PlayerBullet* bullet : bullets_) {
+		bullet->Update();
 	}
 
 	// 移動限界座標
@@ -81,25 +84,21 @@ void Player::Draw(ViewProjection& viewProjection) {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
 	// 弾描画
-	if (bullet_) {
-		bullet_->Draw(viewProjection);
+	for (PlayerBullet* bullet : bullets_) {
+		bullet->Draw(viewProjection);
 	}
 }
 void Player::Attack() {
 
 	if (input_->PushKey(DIK_SPACE)) {
 		
-		// 弾があれば解放する
-		if (bullet_) {
-			delete bullet_;
-			bullet_ = nullptr;
-		}
+		
 
 		// 弾を生成し、初期化
 		PlayerBullet* newBullet = new PlayerBullet();
 		newBullet->Initialize(model_, worldTransform_.translation_);
 
 		// 弾を登録する
-		bullet_ = newBullet;
+		bullets_.push_back(newBullet);
 	}
 }
