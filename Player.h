@@ -26,7 +26,7 @@ public:
 	void Attack();
 
 	// ワールド座標を取得
-	//Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition();
 
 
 	WorldTransform& GetWorldTransform() { return worldTransform_; }

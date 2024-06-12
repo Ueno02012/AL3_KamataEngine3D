@@ -31,7 +31,7 @@ void GameScene::Initialize() {
 
 
 	enemy_ = new Enemy();
-	enemy_->Initialize(model_,worldTransform_.translation_);
+	enemy_->Initialize(model_, Vector3(5,2,30));
 	
 	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
@@ -48,7 +48,7 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 
 	// 敵キャラに自キャラのアドレスを渡す
-	//enemy_->SetPlayer(player_);
+	enemy_->SetPlayer(player_);
 
 }
 

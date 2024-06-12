@@ -46,10 +46,10 @@ public:
 	/// </summary>
 	void Fire();
 
-	//void SetPlayer(Player* player) { player_ = player; }
+	void SetPlayer(Player* player) { player_ = player; }
 
 	// ワールド座標を入れる変数
-	//Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition();
 
 	static const int kFireInterval = 60;
 
@@ -68,6 +68,7 @@ private:
 
 	// フェーズ
 	Phase phase_ = Phase::Approach;
+
 
 
 	int32_t FireTimer = 0;

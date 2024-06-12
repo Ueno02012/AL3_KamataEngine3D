@@ -3,6 +3,7 @@
 #include "TextureManager.h"
 #include <cassert>
 #include "Player.h"
+#include "Vector.h"
 Enemy::~Enemy() {
 	for (EnemyBullet* bullet : bullets_) {
 		delete bullet;
@@ -25,19 +26,40 @@ void Enemy::UpdateApproach() {
 void Enemy::UpdateLeave() { 
 
 	// 移動(ベクトルを加算)
-	worldTransform_.translation_.x -= 0.1f;
-	worldTransform_.translation_.y += 0.1f;
+	worldTransform_.translation_.x -= 0.05f;
+	worldTransform_.translation_.y += 0.05f;
+}
+
+Vector3 Enemy::GetWorldPosition() {
+
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+
+	// ワールド行列の平行移動成分を取得(ワールド座標)
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+
+	return worldPos;
 }
 
 void Enemy::Fire() {
-	//assert(player_);
+	assert(player_);
 
 	// 弾の速度
-	const float kBulletSpeed = 1.0f;
-	Vector3 velocity(0, 0, kBulletSpeed);
+	const float kBulletSpeed = 0.5f;
+	
+	
+	Vector3 playerPos = player_->GetWorldPosition();
+	Vector3 EnemyPos = Enemy::GetWorldPosition();
 
-	//player_->GetWorldPosition();
-	//Enemy::GetWorldPosition()
+	// 敵キャラから自キャラへの差分ベクトルを求める
+	Vector3 difference = Subtract(EnemyPos, playerPos);
+
+	Vector3 normal=Nomalize(difference);
+
+	Vector3 velocity = Multiply(normal, kBulletSpeed);
+
 
 	// 弾を生成し、初期化
 	EnemyBullet* newBullet = new EnemyBullet();
@@ -47,18 +69,6 @@ void Enemy::Fire() {
 	bullets_.push_back(newBullet);
 }
 
-//Vector3 Enemy::GetWorldPosition() { 
-//
-//	//ワールド座標を入れる変数
-//	Vector3 worldPos;
-//
-//	// ワールド行列の平行移動成分を取得(ワールド座標)
-//	worldPos.x = worldTransform_.matWorld_.m[3][0];
-//	worldPos.y = worldTransform_.matWorld_.m[3][1];
-//	worldPos.z = worldTransform_.matWorld_.m[3][2];
-//
-//	return worldPos;
-//}
 
 
 void Enemy::Initialize(Model* model, const Vector3& position) {
@@ -70,12 +80,7 @@ void Enemy::Initialize(Model* model, const Vector3& position) {
 
 	worldTransform_.Initialize();
 
-	// 引数で受け取った初期座標をセット
 	worldTransform_.translation_ = position;
-	worldTransform_.translation_.x = 5.0f;
-	worldTransform_.translation_.y = 2.0f;
-	worldTransform_.translation_.z = 20.0f;
-
 	
 }
 
@@ -100,9 +105,8 @@ void Enemy::Update() {
 		break;
 	case Enemy::Phase::Leave:
 
-		// 移動(ベクトルを加算)
-		//worldTransform_.translation_.x -= 0.1f;
-		//worldTransform_.translation_.y += 0.1f;
+		UpdateLeave();
+
 		break;
 	}
 
