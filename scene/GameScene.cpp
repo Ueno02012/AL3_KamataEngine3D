@@ -47,6 +47,9 @@ void GameScene::Initialize() {
 	//軸方向表示が参照するビュープロジェクションを指定する(アドレス渡し)
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 
+	// 敵キャラに自キャラのアドレスを渡す
+	//enemy_->SetPlayer(player_);
+
 }
 
 void GameScene::Update() { 
