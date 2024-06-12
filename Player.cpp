@@ -98,7 +98,7 @@ void Player::Draw(ViewProjection& viewProjection) {
 	}
 }
 void Player::Attack() {
-	if (input_->PushKey(DIK_SPACE)) {
+	if (input_->TriggerKey(DIK_SPACE)) {
 		//弾の速度
 		const float kBulletSpeed = 1.0f;
 		Vector3 velocity(0, 0, kBulletSpeed);
