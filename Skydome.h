@@ -7,7 +7,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize();
+	void Initialize(Model* model, ViewProjection* viewProjection);
 
 	/// <summary>
 	/// 更新
