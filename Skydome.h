@@ -28,5 +28,5 @@ private:
 
 	//モデル
 	Model* model_ = nullptr;
-
+	ViewProjection* viewProjection_ = nullptr;
 };
