@@ -135,6 +135,7 @@ void GameScene::Draw() {
 	enemy_->Draw(viewProjection_);
 
 	skydome_->Draw();
+
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
