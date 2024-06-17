@@ -39,7 +39,7 @@ void GameScene::Initialize() {
 	enemy_->Initialize(model_, Vector3(5,2,70));
 	
 	skydome_ = new Skydome();
-	skydome_->Initialize();
+	skydome_->Initialize(modelSkydome_, &viewProjection_);
 
 	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
