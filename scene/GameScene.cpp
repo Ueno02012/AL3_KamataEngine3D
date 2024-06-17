@@ -1,4 +1,5 @@
 #include "GameScene.h"
+#include "Vector.h"
 #include "TextureManager.h"
 #include <cassert>
 #include "AxisIndicator.h"
@@ -31,7 +32,7 @@ void GameScene::Initialize() {
 
 
 	enemy_ = new Enemy();
-	enemy_->Initialize(model_, Vector3(5,2,30));
+	enemy_->Initialize(model_, Vector3(5,2,70));
 	
 	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
@@ -57,6 +58,8 @@ void GameScene::Update() {
 	player_->Update();
 
 	enemy_->Update();
+
+	CheckAllCollisions();
 
 	// デバッグカメラの更新
 	debugCamera_->Update();
@@ -142,4 +145,77 @@ void GameScene::Draw() {
 
 void GameScene::CheckAllCollisions() {
 	// 判定対象AとBの座標
+	Vector3 posA, posB;
+
+	// 自弾リストの取得
+	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
+
+	// 敵弾リストの取得
+	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
+
+// 自キャラと敵弾の当たり判定
+#pragma region
+	// 自キャラの座標
+	posA = player_->GetWorldPosition();
+
+	// 自キャラと敵弾全ての当たり判定
+	for (EnemyBullet* bullet : enemyBullets) {
+
+		// 敵弾の座標
+		posB = bullet->GetWorldPosition();
+
+		Vector3 distance = Subtract(posB, posA);
+
+		if ((distance.x * distance.x) + (distance.y * distance.y) + (distance.z * distance.z) <= 1.0f) {
+
+			// 自キャラの衝突時コールバックを呼び出す
+			player_->OnCollision();
+
+			// 敵弾の衝突時コールバックを呼び出す
+			bullet->OnCollision();
+		}
+	}
+
+#pragma endregion
+
+// 自弾と敵キャラの当たり判定
+#pragma region
+
+	posA = enemy_->GetWorldPosition();
+
+	for (PlayerBullet* bullet : playerBullets) {
+
+		posB = bullet->GetWorldPosition();
+
+		Vector3 distance = Subtract(posB, posA);
+
+		if ((distance.x * distance.x) + (distance.y * distance.y) + (distance.z * distance.z) <= 1.0f) {
+
+			// 敵キャラの衝突時コールバックを呼び出す
+			enemy_->OnCollision();
+
+			// 敵弾の衝突時コールバックを呼び出す
+			bullet->OnCollision();
+		}
+	}
+
+#pragma endregion
+
+// 自弾と敵弾の当たり判定
+#pragma region
+	for (PlayerBullet* bullet : playerBullets) {
+		for (EnemyBullet* bullets : enemyBullets) {
+
+			posA = bullet->GetWorldPosition();
+			posB = bullets->GetWorldPosition();
+			Vector3 distance = Subtract(posB, posA);
+
+			if ((distance.x * distance.x) + (distance.y * distance.y) + (distance.z * distance.z) <= 1.0f) {
+
+				bullet->OnCollision();
+				bullets->OnCollision();
+			}
+		}
+	}
+#pragma endregion
 }

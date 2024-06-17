@@ -37,6 +37,8 @@ public:
 
 	WorldTransform& GetWorldTransform() { return worldTransform_; }
 
+	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
+
 private:
 
 	WorldTransform worldTransform_;
@@ -51,6 +53,5 @@ private:
 	//弾
 	std::list<PlayerBullet*> bullets_;
 
-	const std::list<PlayerBullet*>& GetBullet() const { return bullets_; }
 
 };
