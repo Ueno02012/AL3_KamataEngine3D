@@ -4,4 +4,4 @@ void Skydome::Initialize() {}
 
 void Skydome::Update() {}
 
-void Skydome::Draw() {}
+void Skydome::Draw(worldTransform_,ViewProjection_) {}
