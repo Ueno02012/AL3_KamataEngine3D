@@ -34,6 +34,9 @@ void GameScene::Initialize() {
 	enemy_ = new Enemy();
 	enemy_->Initialize(model_, Vector3(5,2,70));
 	
+	skydome_ = new Skydome();
+	skydome_->Initialize();
+
 	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
 
@@ -58,6 +61,8 @@ void GameScene::Update() {
 	player_->Update();
 
 	enemy_->Update();
+
+	skydome_->Update();
 
 	CheckAllCollisions();
 
@@ -125,6 +130,7 @@ void GameScene::Draw() {
 
 	enemy_->Draw(viewProjection_);
 
+	skydome_->Draw()
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
