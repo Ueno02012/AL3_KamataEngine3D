@@ -13,6 +13,7 @@ GameScene::~GameScene() {
 	delete debugCamera_;
 	delete enemy_;
 	delete skydome_;
+	delete modelSkydome_;
 }
 
 void GameScene::Initialize() {
@@ -25,6 +26,8 @@ void GameScene::Initialize() {
 
 	// 3Dモデルの生成
 	model_ = Model::Create();
+	// 3Dモデル(Skydome)の生成
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 
 	// 自キャラの生成
 	player_ = new Player();

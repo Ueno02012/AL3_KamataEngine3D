@@ -63,6 +63,8 @@ private: // メンバ変数
 
 	Skydome* skydome_ = nullptr;
 
+	Model* modelSkydome_ = nullptr;
+
 	// ワールドトランスフォーム
 	WorldTransform worldTransform_;
 	// ビュープロジェクション
