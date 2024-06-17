@@ -22,7 +22,7 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	textureHandle_ = TextureManager::Load("uvChecker.png");
+	textureHandle_ = TextureManager::Load("Player.png");
 
 	// 3Dモデルの生成
 	model_ = Model::Create();
