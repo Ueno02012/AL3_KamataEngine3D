@@ -25,6 +25,12 @@ public:
 	/// </summary>
 	void Attack();
 
+
+	//衝突を検出したらコールバック関数
+	void OnCollision();
+
+
+
 	// ワールド座標を取得
 	Vector3 GetWorldPosition();
 
@@ -45,5 +51,6 @@ private:
 	//弾
 	std::list<PlayerBullet*> bullets_;
 
+	const std::list<PlayerBullet*>& GetBullet() const { return bullets_; }
 
 };

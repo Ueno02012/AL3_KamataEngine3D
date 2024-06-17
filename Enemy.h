@@ -48,6 +48,9 @@ public:
 
 	void SetPlayer(Player* player) { player_ = player; }
 
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
+
 	// ワールド座標を入れる変数
 	Vector3 GetWorldPosition();
 
@@ -76,4 +79,6 @@ private:
 	// 弾
 	std::list<EnemyBullet*> bullets_;
 
+	//弾リストを取得
+	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
 };

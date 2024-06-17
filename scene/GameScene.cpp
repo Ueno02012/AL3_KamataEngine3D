@@ -139,3 +139,7 @@ void GameScene::Draw() {
 
 #pragma endregion
 }
+
+void GameScene::CheckAllCollisions() {
+	// 判定対象AとBの座標
+}
