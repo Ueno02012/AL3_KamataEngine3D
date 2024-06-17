@@ -1,6 +1,14 @@
 #include "Skydome.h"
-
-void Skydome::Initialize() {}
+#include <cassert>
+void Skydome::Initialize(Model* model, ViewProjection* viewProjection) {
+	assert(model);
+	model_ = model;
+	// ワールド変換の初期化
+	worldTransform_.Initialize();
+	worldTransform_.scale_ = {100, 100, 100};
+	// 引数の内容をメンバ変数に記録する
+	viewProjection_ = viewProjection;
+}
 
 void Skydome::Update() {}
 
