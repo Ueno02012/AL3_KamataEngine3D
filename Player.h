@@ -34,7 +34,6 @@ public:
 	// ワールド座標を取得
 	Vector3 GetWorldPosition();
 
-
 	WorldTransform& GetWorldTransform() { return worldTransform_; }
 
 	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }

@@ -18,15 +18,16 @@ public:
 	void Update();
 
 
+	WorldTransform& GetWorldTransform() { return *worldTransform_; }
+
 private:
 
 	// ワールド変換データ
-	WorldTransform worldTransform_;
+	WorldTransform* worldTransform_;
 
 	// ビュープロジェクション
 	ViewProjection viewProjection_;
 
-	Model* model_ = nullptr;
 
 
 };

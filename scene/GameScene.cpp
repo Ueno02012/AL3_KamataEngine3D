@@ -80,6 +80,8 @@ void GameScene::Update() {
 
 	WorldTransform& playerTransform = player_->GetWorldTransform();
 
+
+
 	ImGui::Begin("Move");
 	ImGui::DragFloat3("Player", &playerTransform.translation_.x, 0.01f);
 	ImGui::End();
