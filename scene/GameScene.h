@@ -65,6 +65,9 @@ private: // メンバ変数
 
 	Model* modelSkydome_ = nullptr;
 
+	//レールカメラ
+	Model* railCamera_ = nullptr;
+
 	// ワールドトランスフォーム
 	WorldTransform worldTransform_;
 	// ビュープロジェクション
