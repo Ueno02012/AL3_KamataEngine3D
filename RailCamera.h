@@ -2,6 +2,7 @@
 #include "WorldTransform.h"
 #include "ViewProjection.h"
 #include "Model.h"
+#include "Matrix.h"
 class RailCamera {
 
 public:
@@ -9,7 +10,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(WorldTransform* worldTransform);
+	void Initialize(WorldTransform* worldTransform,Vector3 rotation);
 
 
 	/// <summary>
@@ -18,7 +19,9 @@ public:
 	void Update();
 
 
-	WorldTransform& GetWorldTransform() { return *worldTransform_; }
+	const WorldTransform& GetWorldTransform() { return *worldTransform_; }
+
+	const ViewProjection& GetViewProjection() { return viewProjection_; }
 
 private:
 
@@ -28,6 +31,6 @@ private:
 	// ビュープロジェクション
 	ViewProjection viewProjection_;
 
-
+	Vector3 velocity{1,1,1};
 
 };

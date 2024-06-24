@@ -54,6 +54,7 @@ void GameScene::Initialize() {
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(300, 200);
 
+	railCamera_ = new RailCamera();
 
 	//軸方向表示の表示を有効にする
 	AxisIndicator::GetInstance()->SetVisible(true);
@@ -74,6 +75,8 @@ void GameScene::Update() {
 	skydome_->Update();
 
 	CheckAllCollisions();
+
+	railCamera_->Update();
 
 	// デバッグカメラの更新
 	debugCamera_->Update();
