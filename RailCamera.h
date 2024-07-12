@@ -3,6 +3,8 @@
 #include "ViewProjection.h"
 #include "Model.h"
 #include "Matrix.h"
+#include"Matrix4x4.h"
+
 class RailCamera {
 
 public:
@@ -10,7 +12,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(WorldTransform* worldTransform,Vector3 rotation);
+	void Initialize(Vector3 worldTransform,Vector3 rotation);
 
 
 	/// <summary>
@@ -19,14 +21,16 @@ public:
 	void Update();
 
 
-	const WorldTransform& GetWorldTransform() { return *worldTransform_; }
-
+	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 	const ViewProjection& GetViewProjection() { return viewProjection_; }
+
+	Matrix4x4 GetView() { return viewProjection_.matView; }
+	Matrix4x4 GetWorld() { return viewProjection_.matProjection; }
 
 private:
 
 	// ワールド変換データ
-	WorldTransform* worldTransform_;
+	WorldTransform worldTransform_;
 
 	// ビュープロジェクション
 	ViewProjection viewProjection_;

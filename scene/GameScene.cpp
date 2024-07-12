@@ -56,6 +56,10 @@ void GameScene::Initialize() {
 
 	railCamera_ = new RailCamera();
 
+	Vector3 railworldTransform = {0.0f, 0.0f, 0.0f};
+	Vector3 railRotation = {0.0f, 0.0f, 0.0f};
+	railCamera_->Initialize(railworldTransform, railRotation);
+
 	//軸方向表示の表示を有効にする
 	AxisIndicator::GetInstance()->SetVisible(true);
 	//軸方向表示が参照するビュープロジェクションを指定する(アドレス渡し)
@@ -75,8 +79,6 @@ void GameScene::Update() {
 	skydome_->Update();
 
 	CheckAllCollisions();
-
-	railCamera_->Update();
 
 	// デバッグカメラの更新
 	debugCamera_->Update();
@@ -104,6 +106,9 @@ void GameScene::Update() {
 		//ビュープロジェクション行列の転送
 		viewProjection_.TransferMatrix();
 	} else {
+		railCamera_->Update();
+		viewProjection_.matView = railCamera_->GetView();
+		viewProjection_.matProjection = railCamera_->GetWorld();
 		//ビュープロジェクション行列の更新と転送
 		viewProjection_.UpdateMatrix();
 	}
