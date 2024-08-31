@@ -23,7 +23,7 @@ public:
 	// ビュープロジェクションの取得関数
 	//Matrix4x4& GetViewProjectionMatrix();
 
-	const WorldTransform& GetWorldTransform() { return worldTransform_; }
+	const WorldTransform& GetWorldTransform() const { return worldTransform_; }
 	const ViewProjection& GetViewProjection() { return viewProjection_; }
 
 	const Matrix4x4& GetView() { return viewProjection_.matView; }
