@@ -6,17 +6,18 @@ Player::~Player() {
 	for (PlayerBullet* bullet : bullets_) {
 		delete bullet;
 	}
+	
 }
 
 
-void Player::Initialize(Model* model, uint32_t textureHandle) {
+void Player::Initialize(Model* model, uint32_t textureHandle,Vector3 position) {
 	assert(model);
 	// 引数として受け取ったデータをメンバ変数に記録
 	model_ = model;
 	textureHandle_ = textureHandle;
+	position_ = position;
 	// ワールド変換の初期化
 	worldTransform_.Initialize();
-	
 	
 	// シングルトンインスタンスを取得する
 	input_ = Input::GetInstance();
@@ -118,6 +119,11 @@ void Player::Attack() {
 }
 
 void Player::OnCollision() {}
+
+void Player::SetParent(const WorldTransform* parent) {
+	//親子関係を結ぶ
+	worldTransform_.parent_ = parent;
+}
 
 Vector3 Player::GetWorldPosition() { 
 

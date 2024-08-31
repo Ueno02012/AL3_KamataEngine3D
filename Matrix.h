@@ -3,8 +3,7 @@
 #include "Matrix4x4.h"
 #include "Vector3.h"
 #include <cmath>
-
-// 加法
+   // 加法
 static Matrix4x4 Add(const Matrix4x4& m1, const Matrix4x4& m2) {
 	Matrix4x4 result{};
 	for (int i = 0; i < 4; i++) {
@@ -248,3 +247,9 @@ static Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m) {
 	};
 	return result;
 }
+//Vector3& operator*=(Vector3& v, float s) {
+//	v.x *= s;
+//	v.y *= s;
+//	v.z *= s;
+//	return v;
+//}

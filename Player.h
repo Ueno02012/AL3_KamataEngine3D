@@ -14,7 +14,7 @@ public:
 	/// </summary>
 	~Player();
 
-	void Initialize(Model* model,uint32_t textureHandle);
+	void Initialize(Model* model,uint32_t textureHandle,Vector3 position);
 
 	void Update();
 
@@ -29,7 +29,7 @@ public:
 	//衝突を検出したらコールバック関数
 	void OnCollision();
 
-
+	void SetParent(const WorldTransform* parent);
 
 	// ワールド座標を取得
 	Vector3 GetWorldPosition();
@@ -47,6 +47,8 @@ private:
 	uint32_t textureHandle_ = 0u;
 
 	Input* input_ = nullptr;
+
+	Vector3 position_ = {0,0,0};
 
 	const float kRotSpeed = 0.02f;
 	//弾
