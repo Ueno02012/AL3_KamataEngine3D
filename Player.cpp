@@ -122,7 +122,7 @@ void Player::OnCollision() {}
 
 void Player::SetParent(const WorldTransform* parent) {
 	//親子関係を結ぶ
-	worldTransform_.parent_ = parent;
+	//worldTransform_.parent_ = parent;
 }
 
 Vector3 Player::GetWorldPosition() { 

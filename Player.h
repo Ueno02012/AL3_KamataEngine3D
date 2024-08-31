@@ -29,7 +29,7 @@ public:
 	//衝突を検出したらコールバック関数
 	void OnCollision();
 
-	void SetParent(const WorldTransform* parent);
+	void SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }
 
 	// ワールド座標を取得
 	Vector3 GetWorldPosition();
