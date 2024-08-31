@@ -24,7 +24,7 @@ public:
 	//Matrix4x4& GetViewProjectionMatrix();
 
 	const WorldTransform& GetWorldTransform() const { return worldTransform_; }
-	const ViewProjection& GetViewProjection() { return viewProjection_; }
+	const ViewProjection& GetViewProjection() const { return viewProjection_; }
 
 	const Matrix4x4& GetView() { return viewProjection_.matView; }
 	const Matrix4x4& GetWorld() { return viewProjection_.matProjection; }
