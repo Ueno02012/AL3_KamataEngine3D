@@ -37,6 +37,8 @@ void GameScene::Initialize() {
 	// ファイル名を指定してテクスチャを読み込む
 	textureHandle_ = TextureManager::Load("Player.png");
 	EnemytextureHandle_ = TextureManager::Load("Enemy.png");
+	// レティクルのテクスチャ
+	TextureManager::Load("Target.png");
 	// 3Dモデルデータの生成
 	model_ = Model::Create();
 	// 天球の生成
@@ -48,7 +50,7 @@ void GameScene::Initialize() {
 	// 自キャラの生成
 	player_ = new Player();
 	Vector3 PlayerPosition(0.0f, 0.0f, 40.0f);
-	player_->Initialize(model_, textureHandle_, PlayerPosition);
+	player_->Initialize(model_, textureHandle_, PlayerPosition,&viewProjection_);
 
 	// デバックカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
@@ -268,6 +270,9 @@ void GameScene::Draw() {
 
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
+
+	player_->DrawUI();
+
 	/// </summary>
 
 	// スプライト描画後処理
@@ -301,7 +306,7 @@ void GameScene::Fire() {
 		// ベクトルの正規化
 		float length = Length(direction);
 		// ベクトルの正規化
-		Vector3 normalizedDirection = Normalize(direction, length);
+		Vector3 normalizedDirection = NorMalize(direction, length);
 		// ベクトルの長さを、速さに合わせる
 		Vector3 velocity = {normalizedDirection.x * kBulletSpeed, normalizedDirection.y * kBulletSpeed, normalizedDirection.z * kBulletSpeed};
 

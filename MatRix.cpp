@@ -1,11 +1,16 @@
 #include "MatRix.h"
 
-float Length(const Vector3& v) { 
-	return sqrtf(powf(v.x, 2) + powf(v.y, 2) + powf(v.z, 2)); 
-};
+float Length(const Vector3& v) { return sqrtf(powf(v.x, 2) + powf(v.y, 2) + powf(v.z, 2)); };
 
-Vector3 Normalize(const Vector3& v, const float length) { 
-	return {v.x / length, v.y / length, v.z / length}; 
+Vector3 Normalize(const Vector3& v) {
+	float length = Length(v);
+	Vector3 result{};
+	if (length != 0.0) {
+		result.x = v.x / length;
+		result.y = v.y / length;
+		result.z = v.z / length;
+	}
+	return result;
 };
 
 Matrix4x4 MakeRotateXMatrix(float radian) {
@@ -220,7 +225,6 @@ Matrix4x4 MakeScaleMatrix(const Vector3& Scale) {
 	return result;
 };
 
-
 Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m) {
 	Vector3 result{
 	    v.x * m.m[0][0] + v.y * m.m[1][0] + v.z * m.m[2][0],
@@ -230,7 +234,7 @@ Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m) {
 	return result;
 }
 
-Vector3 Distance(const Vector3& A, const Vector3& B){
+Vector3 Distance(const Vector3& A, const Vector3& B) {
 	Vector3 result{};
 	result = {
 	    B.x - A.x,
@@ -239,7 +243,6 @@ Vector3 Distance(const Vector3& A, const Vector3& B){
 	};
 	return result;
 };
-
 
 Matrix4x4 Inverse(const Matrix4x4& matrix) {
 
@@ -307,3 +310,4 @@ Matrix4x4 Inverse(const Matrix4x4& matrix) {
 
 	return result;
 };
+Vector3 NorMalize(const Vector3& v, const float length) { return {v.x / length, v.y / length, v.z / length}; };

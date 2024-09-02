@@ -1,13 +1,15 @@
 #pragma once
 #include "Matrix4x4.h"
 #include "Vector3.h"
+#include <assert.h>
 #include <cmath>
-
 
 // 長さ(ノルム)
 float Length(const Vector3& v);
 // ベクトルを正規化
-Vector3 Normalize(const Vector3& v, const float length); 
+Vector3 Normalize(const Vector3& v);
+// ベクトルを正規化
+Vector3 NorMalize(const Vector3& v, const float length);
 
 // 1. X軸回転行列
 Matrix4x4 MakeRotateXMatrix(float radian);
@@ -43,4 +45,3 @@ Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m);
 Vector3 Distance(const Vector3& A, const Vector3& B);
 // 逆行列
 Matrix4x4 Inverse(const Matrix4x4& matrix);
-
