@@ -6,18 +6,12 @@
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
-	// 3Dモデルデータの開放
 	delete model_;
-	// 自キャラの開放
 	delete player_;
-	// デバックカメラの開放
 	delete debugCamera_;
-	// 敵キャラの解放
 	delete enemy_;
-	// 天球の解放
 	delete modelSkydome_;
 	delete skydome_;
-	// レールカメラの解放
 	delete railCamera_;
 }
 

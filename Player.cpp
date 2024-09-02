@@ -108,7 +108,7 @@ void Player::Update() {
 		worldTransform_.UpdateMatrix();
 	}
 
-	// 回転速さ[ラジアン/frame]
+	// 回転スピード
 	const float kRotSpeed = 0.02f;
 	// 押した方向で移動ベクトルを変更
 	if (input_->PushKey(DIK_A)) {
