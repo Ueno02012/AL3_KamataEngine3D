@@ -2,16 +2,29 @@
 #include "AxisIndicator.h"
 #include "TextureManager.h"
 #include <cassert>
+#include <fstream>
 
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
+	// 3Dモデルデータの開放
 	delete model_;
+	// 自キャラの開放
 	delete player_;
+	// デバックカメラの開放
 	delete debugCamera_;
-	delete enemy_;
+	// 敵キャラの解放
+	for (Enemy* enemy : enemys_) {
+		delete enemy;
+	}
+	//  敵の弾の解放
+	for (EnemyBullet* bullet : enemyBullets_) {
+		delete bullet;
+	}
+	// 天球の解放
 	delete modelSkydome_;
 	delete skydome_;
+	// レールカメラの解放
 	delete railCamera_;
 }
 
@@ -45,11 +58,8 @@ void GameScene::Initialize() {
 	// 縦方向表示が参照するビュープロジェクションを指定する(アドレス渡し)
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 
-	// 敵キャラの生成
-	enemy_ = new Enemy();
-	enemy_->Initialize(model_, EnemytextureHandle_);
-	// 敵キャラに自キャラのアドレスを渡す
-	enemy_->SetPlayer(player_);
+	// 敵発生データの読み込み
+	LoadEnemyPopData();
 
 	// 天球の生成
 	skydome_ = new Skydome();
@@ -69,13 +79,11 @@ void GameScene::CheckAllCollisions() {
 
 	// 自弾リストの取得
 	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
-	// 敵弾リストの取得
-	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
 
 #pragma region 自キャラと敵弾の当たり判定
 	// 自キャラの座標
 	posA = player_->GetWorldPosition();
-	for (EnemyBullet* bullet : enemyBullets) {
+	for (EnemyBullet* bullet : enemyBullets_) {
 		// 敵弾の座標
 		posB = bullet->GetWorldPosition();
 		Vector3 diff = Distance(posA, posB);
@@ -92,26 +100,28 @@ void GameScene::CheckAllCollisions() {
 #pragma endregion
 
 #pragma region 自弾と敵キャラの当たり判定
-	// 敵キャラの座標
-	posB = enemy_->GetWorldPosition();
-	for (PlayerBullet* bullet : playerBullets) {
-		// 自弾の座標
-		posA = bullet->GetWorldPosition();
-		// 座標AとBの距離を求める
-		float distance = Length(Distance(posA, posB));
-		// 球同士が当たっていれば
-		if (distance < 1.0f) {
-			// 敵キャラの衝突時コールバックを呼び出す
-			enemy_->OnCollision();
-			// 自弾の衝突時コールバックを呼び出す
-			bullet->OnCollision();
+	for (Enemy* enemy : enemys_) {
+		// 敵キャラの座標
+		posB = enemy->GetWorldPosition();
+		for (PlayerBullet* bullet : playerBullets) {
+			// 自弾の座標
+			posA = bullet->GetWorldPosition();
+			// 座標AとBの距離を求める
+			float distance = Length(Distance(posA, posB));
+			// 球同士が当たっていれば
+			if (distance < 1.0f) {
+				// 敵キャラの衝突時コールバックを呼び出す
+				enemy->OnCollision();
+				// 自弾の衝突時コールバックを呼び出す
+				bullet->OnCollision();
+			}
 		}
 	}
 #pragma endregion
 
 #pragma region 自弾と敵弾の当たり判定
 	for (PlayerBullet* bulletA : playerBullets) {
-		for (EnemyBullet* bulletB : enemyBullets) {
+		for (EnemyBullet* bulletB : enemyBullets_) {
 			// 自弾の座標
 			posA = bulletA->GetWorldPosition();
 			// 敵弾の座標
@@ -131,8 +141,43 @@ void GameScene::CheckAllCollisions() {
 
 void GameScene::Update() {
 
+	// 敵発生コマンドの更新
+	UpdateEnemyPopCommands();
+
+	// デスフラグの立った球を削除
+	enemyBullets_.remove_if([](EnemyBullet* bullet) {
+		if (bullet->IsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
+
+	// デスフラグの立った球を削除
+	enemys_.remove_if([](Enemy* enemy) {
+		if (enemy->IsDead()) {
+			delete enemy;
+			return true;
+		}
+		return false;
+	});
+
+	// 発射タイマーカウントダウン
+	ReloadTimer_--;
+	// 指定時間に達したら
+	if (ReloadTimer_ <= 0) {
+		// 弾を発射
+		Fire();
+		ReloadTimer_ = kFireInterval;
+	}
+	for (EnemyBullet* bullet : enemyBullets_) {
+		bullet->Update();
+	}
+
 	// 敵キャラの更新
-	enemy_->Update();
+	for (Enemy* enemy : enemys_) {
+		enemy->Update();
+	}
 	// 衝突判定と応答
 	GameScene::CheckAllCollisions();
 	// 天球の更新
@@ -168,7 +213,6 @@ void GameScene::Update() {
 	}
 	// 自キャラの更新
 	player_->Update();
-
 }
 
 void GameScene::Draw() {
@@ -201,7 +245,13 @@ void GameScene::Draw() {
 	player_->Draw(viewProjection_);
 
 	// 敵キャラの描画
-	enemy_->Draw(viewProjection_);
+	for (Enemy* enemy : enemys_) {
+		enemy->Draw(viewProjection_);
+	}
+	//	敵の弾の描画
+	for (EnemyBullet* bullet : enemyBullets_) {
+		bullet->Draw(viewProjection_);
+	}
 
 	// 天球の描画
 	skydome_->Draw();
@@ -224,4 +274,133 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet) {
+	// リストに登録する
+	enemyBullets_.push_back(enemyBullet);
+}
+
+void GameScene::Fire() {
+	for (Enemy* enemy : enemys_) {
+		assert(player_);
+		Vector3 pos = enemy->GetWorldTranslation();
+
+		// 自キャラの座標をコピー
+		DirectX::XMFLOAT3 position = {pos.x, pos.y, pos.z};
+
+		// 弾の速さ(調整項目)
+		const float kBulletSpeed = 1.0f;
+
+		// 自キャラのワールド座標を取得する
+		Vector3 playerPosition = player_->GetWorldPosition();
+		// 敵キャラのワールド座標を取得する
+		Vector3 enemyPosition = enemy->GetWorldPosition();
+		// 敵キャラから自キャラへの差分ベクトルを求める
+		Vector3 direction = {playerPosition.x - enemyPosition.x, playerPosition.y - enemyPosition.y, playerPosition.z - enemyPosition.z};
+		// ベクトルの正規化
+		float length = Length(direction);
+		// ベクトルの正規化
+		Vector3 normalizedDirection = Normalize(direction, length);
+		// ベクトルの長さを、速さに合わせる
+		Vector3 velocity = {normalizedDirection.x * kBulletSpeed, normalizedDirection.y * kBulletSpeed, normalizedDirection.z * kBulletSpeed};
+
+		// 球を生成し、初期化
+		EnemyBullet* newBullet = new EnemyBullet();
+		newBullet->Initialize(model_, {position.x, position.y, position.z}, velocity);
+		// 球を登録する
+		AddEnemyBullet(newBullet);
+	}
+}
+
+void GameScene::ApproachPhaseInitialize() {
+	// 発射タイマーを初期化
+	ReloadTimer_ = kFireInterval;
+}
+void GameScene::LoadEnemyPopData() {
+	// ファイルを開く
+	std::ifstream file{};
+	file.open("Resources/enemyPop.csv");
+	assert(file.is_open());
+
+	// ファイルの内容を文字列ストリームにコピー
+	enemyPopCommands << file.rdbuf();
+
+	// ファイルを閉じる
+	file.close();
+}
+
+void GameScene::UpdateEnemyPopCommands() {
+	// 待機処理
+	if (isWaiting_) {
+		waitTimer_--;
+		if (waitTimer_ <= 0) {
+			// 待機完了
+			isWaiting_ = false;
+		}
+		return;
+	}
+
+	// 1行分の文字列を入れる変数
+	std::string line;
+
+	// コマンド実行ループ
+	while (getline(enemyPopCommands, line)) {
+		// 1行分の文字列をストリームに変換して解析しやすくする
+		std::istringstream line_stream(line);
+
+		std::string word;
+		// ,区切りで行の先頭文字列を取得
+		getline(line_stream, word, ',');
+
+		// "//"から始まる行はコメント
+		if (word.find("//") == 0) {
+			// コメント行を飛ばす
+			continue;
+		}
+
+		// POPコマンド
+		if (word.find("POP") == 0) {
+			// x座標
+			getline(line_stream, word, ',');
+			float x = (float)std::atof(word.c_str());
+
+			// y座標
+			getline(line_stream, word, ',');
+			float y = (float)std::atof(word.c_str());
+
+			// z座標
+			getline(line_stream, word, ',');
+			float z = (float)std::atof(word.c_str());
+
+			// 敵を発生させる
+
+			EnemyPop(Vector3(x, y, z));
+
+			// WAITコマンド
+		} else if (word.find("WAIT") == 0) {
+			getline(line_stream, word, ',');
+
+			// 待ち時間
+			int32_t waitTime = atoi(word.c_str());
+
+			// 待機開始
+			isWaiting_ = true;
+			waitTimer_ = waitTime;
+
+			// コマンドを抜ける
+			break;
+		}
+	}
+}
+
+void GameScene::EnemyPop(Vector3 v) {
+	// 敵キャラの生成
+	Enemy* enemy = new Enemy();
+	enemy->Initialize(model_, EnemytextureHandle_,v);
+	// 敵キャラに自キャラのアドレスを渡す
+	enemy->SetPlayer(player_);
+	// 敵キャラにゲームシーンを渡す
+	enemy->SetGameScene(this);
+	enemys_.push_back(enemy);
 }

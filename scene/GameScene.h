@@ -12,6 +12,7 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include <sstream>
 
 /// <summary>
 /// ゲームシーン
@@ -49,7 +50,29 @@ public: // メンバ関数
 	/// </summary>
 	void CheckAllCollisions();
 
+	/// <summary>
+	/// 敵弾を追加する
+	/// </summary>
+	/// <param name="enemyBullet"></param>
+	void AddEnemyBullet(EnemyBullet* enemyBullet);
+	// 攻撃
+	void Fire();
+	// 発射感覚
+	static const int kFireInterval = 60;
+	// 接近フェーズ初期化
+	void ApproachPhaseInitialize();
 
+	///// <summary>
+	/// 敵発生データの読み込み
+	/// </summary>
+	void LoadEnemyPopData();
+
+	/// <summary>
+	/// 敵発生コマンドの更新
+	/// </summary>
+	void UpdateEnemyPopCommands();
+
+	void EnemyPop(Vector3 v);
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -61,6 +84,7 @@ private: // メンバ変数
 	uint32_t EnemytextureHandle_ = 0u;
 	// 3Dモデルデータ
 	Model* model_ = nullptr;
+	Model* modelEnemy_ = nullptr;
 	// ビュープロジェクション
 	ViewProjection viewProjection_;
 
@@ -71,8 +95,19 @@ private: // メンバ変数
 	bool isDebugCameraActive_ = false;
 	// デバックカメラ
 	DebugCamera* debugCamera_ = nullptr;
-	// 敵キャラ
-	Enemy* enemy_ = nullptr;
+	// 敵キャラ	
+	std::list<Enemy*> enemys_;
+	// 敵の弾
+	std::list<EnemyBullet*> enemyBullets_;
+	// 敵発生コマンド
+	std::stringstream enemyPopCommands;
+	Vector3 EnemyPosition;
+	// 敵の待機
+	bool isWaiting_ = false;
+	int32_t waitTimer_ = 0;  
+
+	// 発射タイマー
+	int32_t ReloadTimer_ = 0;
 
 	// 3Dモデル(天球)
 	Model* modelSkydome_ = nullptr;
