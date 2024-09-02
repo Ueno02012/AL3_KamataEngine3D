@@ -22,7 +22,7 @@ void GameScene::Initialize() {
 	audio_ = Audio::GetInstance();
 
 	// ファイル名を指定してテクスチャを読み込む
-	textureHandle_ = TextureManager::Load("uvChecker.png");
+	textureHandle_ = TextureManager::Load("Player.png");
 	EnemytextureHandle_ = TextureManager::Load("Enemy.png");
 	// 3Dモデルデータの生成
 	model_ = Model::Create();
