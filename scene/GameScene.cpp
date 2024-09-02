@@ -1,131 +1,184 @@
 #include "GameScene.h"
 #include "AxisIndicator.h"
 #include "TextureManager.h"
-#include "Vector.h"
-#include "imgui.h"
 #include <cassert>
 
-GameScene::GameScene() : model_(nullptr), player_(nullptr), debugCamera_(nullptr), enemy_(nullptr), skydome_(nullptr), modelSkydome_(nullptr), isDebugCameraActive_(false) {}
+GameScene::GameScene() {}
 
 GameScene::~GameScene() {
+	// 3Dモデルデータの開放
 	delete model_;
+	// 自キャラの開放
 	delete player_;
+	// デバックカメラの開放
 	delete debugCamera_;
+	// 敵キャラの解放
 	delete enemy_;
-	delete skydome_;
+	// 天球の解放
 	delete modelSkydome_;
+	delete skydome_;
+	// レールカメラの解放
 	delete railCamera_;
 }
 
 void GameScene::Initialize() {
+
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	textureHandle_ = TextureManager::Load("Player.png");
-
-	// 3Dモデルの生成
+	// ファイル名を指定してテクスチャを読み込む
+	textureHandle_ = TextureManager::Load("uvChecker.png");
+	EnemytextureHandle_ = TextureManager::Load("Enemy.png");
+	// 3Dモデルデータの生成
 	model_ = Model::Create();
-	// 3Dモデル(Skydome)の生成
+	// 天球の生成
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 
 	// ビュープロジェクションの初期化
-	viewProjection_.farZ = 320;
 	viewProjection_.Initialize();
 
 	// 自キャラの生成
 	player_ = new Player();
+	Vector3 PlayerPosition(0.0f, 0.0f, 40.0f);
+	player_->Initialize(model_, textureHandle_, PlayerPosition);
 
-	// 自キャラの初期化
-	Vector3 playerPosition(0, 0, 50);
+	// デバックカメラの生成
+	debugCamera_ = new DebugCamera(1280, 720);
 
-	player_->Initialize(model_, textureHandle_,playerPosition);
+	//	縦方向表示の表示を有効する
+	AxisIndicator::GetInstance()->SetVisible(true);
+	// 縦方向表示が参照するビュープロジェクションを指定する(アドレス渡し)
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 
+	// 敵キャラの生成
 	enemy_ = new Enemy();
-	enemy_->Initialize(model_, Vector3(5, 2, 70));
+	enemy_->Initialize(model_, EnemytextureHandle_);
+	// 敵キャラに自キャラのアドレスを渡す
+	enemy_->SetPlayer(player_);
 
+	// 天球の生成
 	skydome_ = new Skydome();
 	skydome_->Initialize(modelSkydome_, &viewProjection_);
 
-	// ワールドトランスフォームの初期化
-	worldTransform_.Initialize();
-
-	// デバッグカメラの生成
-	debugCamera_ = new DebugCamera(300, 200);
-
-
-	// レールカメラの初期化
+	// レールカメラの生成
 	railCamera_ = new RailCamera();
-	Vector3 railworldTransform = {0.0f, 0.0f,0.0f};
-	Vector3 railRotation = {0.0f, 0.0f, 0.0f};
-	railCamera_->Initialize(railworldTransform, railRotation);
+	railCamera_->Initialize(Vector3{0.0f, 0.0f, -40.0f}, Vector3{0.0f, 0.0f, 0.0f});
 
+	// 自キャラとレールカメラの親子関係を結ぶ
 	player_->SetParent(&railCamera_->GetWorldTransform());
+}
 
+void GameScene::CheckAllCollisions() {
+	// 判定対象AとBの座標
+	Vector3 posA, posB;
 
-	// 軸方向表示の表示を有効にする
-	AxisIndicator::GetInstance()->SetVisible(true);
-	// 軸方向表示が参照するビュープロジェクションを指定する(アドレス渡し)
-	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
+	// 自弾リストの取得
+	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
+	// 敵弾リストの取得
+	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
 
-	// 敵キャラに自キャラのアドレスを渡す
-	enemy_->SetPlayer(player_);
+#pragma region 自キャラと敵弾の当たり判定
+	// 自キャラの座標
+	posA = player_->GetWorldPosition();
+	for (EnemyBullet* bullet : enemyBullets) {
+		// 敵弾の座標
+		posB = bullet->GetWorldPosition();
+		Vector3 diff = Distance(posA, posB);
+		// 座標AとBの距離を求める
+		float distance = Length(diff);
+		// 球と球の交差判定
+		if (distance < 1.0f) {
+			// 自キャラの衝突時コールバックを呼び出す
+			player_->OnCollision();
+			// 敵弾の衝突時コールバックを呼び出す
+			bullet->OnCollision();
+		}
+	}
+#pragma endregion
+
+#pragma region 自弾と敵キャラの当たり判定
+	// 敵キャラの座標
+	posB = enemy_->GetWorldPosition();
+	for (PlayerBullet* bullet : playerBullets) {
+		// 自弾の座標
+		posA = bullet->GetWorldPosition();
+		// 座標AとBの距離を求める
+		float distance = Length(Distance(posA, posB));
+		// 球同士が当たっていれば
+		if (distance < 1.0f) {
+			// 敵キャラの衝突時コールバックを呼び出す
+			enemy_->OnCollision();
+			// 自弾の衝突時コールバックを呼び出す
+			bullet->OnCollision();
+		}
+	}
+#pragma endregion
+
+#pragma region 自弾と敵弾の当たり判定
+	for (PlayerBullet* bulletA : playerBullets) {
+		for (EnemyBullet* bulletB : enemyBullets) {
+			// 自弾の座標
+			posA = bulletA->GetWorldPosition();
+			// 敵弾の座標
+			posB = bulletB->GetWorldPosition();
+			// 座標AとBの距離を求める
+			float distance = Length(Distance(posA, posB));
+			if (distance < 1.0f) {
+				// 自弾の衝突時コールバックを呼び出す
+				bulletA->OnCollision();
+				// 敵弾の衝突時コールバックを呼び出す
+				bulletB->OnCollision();
+			}
+		}
+	}
+#pragma endregion
 }
 
 void GameScene::Update() {
-	// 自キャラの更新
-	player_->Update();
 
 	// 敵キャラの更新
 	enemy_->Update();
-
-	// スカイドームの更新
+	// 衝突判定と応答
+	GameScene::CheckAllCollisions();
+	// 天球の更新
 	skydome_->Update();
 
-	// 衝突判定
-	CheckAllCollisions();
-
-	
-
-
-	// プレイヤーのワールドトランスフォームを取得
-	WorldTransform& playerTransform = player_->GetWorldTransform();
-
-	// ImGuiを使ったプレイヤーの位置調整
-	ImGui::Begin("Move");
-	ImGui::DragFloat3("Player", &playerTransform.translation_.x, 0.01f);
-	ImGui::End();
-
-// デバッグカメラの切り替え
+	// デバックカメラの更新
+	debugCamera_->Update();
 #ifdef _DEBUG
-	if (input_->TriggerKey(DIK_RETURN)) {
-		isDebugCameraActive_ = !isDebugCameraActive_;
+	if (input_->TriggerKey(DIK_TAB)) {
+		if (isDebugCameraActive_ == true) {
+			isDebugCameraActive_ = false;
+		} else {
+			isDebugCameraActive_ = true;
+		}
 	}
-#endif
+#endif //  _DEBUG
 
+	// カメラの処理
 	if (isDebugCameraActive_) {
-		// デバッグカメラの更新
+		// デバックカメラの更新
 		debugCamera_->Update();
-		// デバッグカメラがアクティブな場合の行列設定
 		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		// ビュープロジェクション行列の転送
 		viewProjection_.TransferMatrix();
 	} else {
 		// レールカメラの更新
-	
 		railCamera_->Update();
-		// レールカメラがアクティブな場合の行列設定
-		viewProjection_.matView = railCamera_->GetView();
-		viewProjection_.matProjection = railCamera_->GetWorld();
+		viewProjection_.matView = railCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
+		// ビュープロジェクション行列の更新と転送
 		viewProjection_.TransferMatrix();
-
 	}
+	// 自キャラの更新
+	player_->Update();
 
-	// ビュープロジェクション行列の更新と転送
-	//viewProjection_.UpdateMatrix();
 }
 
 void GameScene::Draw() {
+
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
@@ -136,8 +189,6 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
-
-	// sprite_->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -151,7 +202,6 @@ void GameScene::Draw() {
 
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
-	/// </summary>
 
 	// 自キャラの描画
 	player_->Draw(viewProjection_);
@@ -159,8 +209,10 @@ void GameScene::Draw() {
 	// 敵キャラの描画
 	enemy_->Draw(viewProjection_);
 
-	// スカイドームの描画
+	// 天球の描画
 	skydome_->Draw();
+
+	/// </summary>
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -177,76 +229,5 @@ void GameScene::Draw() {
 	// スプライト描画後処理
 	Sprite::PostDraw();
 
-#pragma endregion
-}
-
-void GameScene::CheckAllCollisions() {
-	// 判定対象AとBの座標
-	Vector3 posA, posB;
-
-	// 自弾リストの取得
-	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
-
-	// 敵弾リストの取得
-	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
-
-	// 自キャラと敵弾の当たり判定
-#pragma region
-	// 自キャラの座標
-	posA = player_->GetWorldPosition();
-
-	// 自キャラと敵弾全ての当たり判定
-	for (EnemyBullet* bullet : enemyBullets) {
-		// 敵弾の座標
-		posB = bullet->GetWorldPosition();
-
-		Vector3 distance = Subtract(posB, posA);
-
-		if ((distance.x * distance.x) + (distance.y * distance.y) + (distance.z * distance.z) <= 1.0f) {
-			// 自キャラの衝突時コールバックを呼び出す
-			player_->OnCollision();
-
-			// 敵弾の衝突時コールバックを呼び出す
-			bullet->OnCollision();
-		}
-	}
-
-#pragma endregion
-
-	// 自弾と敵キャラの当たり判定
-#pragma region
-
-	posA = enemy_->GetWorldPosition();
-
-	for (PlayerBullet* bullet : playerBullets) {
-		posB = bullet->GetWorldPosition();
-
-		Vector3 distance = Subtract(posB, posA);
-
-		if ((distance.x * distance.x) + (distance.y * distance.y) + (distance.z * distance.z) <= 1.0f) {
-			// 敵キャラの衝突時コールバックを呼び出す
-			enemy_->OnCollision();
-
-			// 自弾の衝突時コールバックを呼び出す
-			bullet->OnCollision();
-		}
-	}
-
-#pragma endregion
-
-	// 自弾と敵弾の当たり判定
-#pragma region
-	for (PlayerBullet* bullet : playerBullets) {
-		for (EnemyBullet* bullets : enemyBullets) {
-			posA = bullet->GetWorldPosition();
-			posB = bullets->GetWorldPosition();
-			Vector3 distance = Subtract(posB, posA);
-
-			if ((distance.x * distance.x) + (distance.y * distance.y) + (distance.z * distance.z) <= 1.0f) {
-				bullet->OnCollision();
-				bullets->OnCollision();
-			}
-		}
-	}
 #pragma endregion
 }

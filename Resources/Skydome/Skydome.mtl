@@ -1,13 +1,12 @@
 # Blender 4.1.1 MTL File: 'Skydome.blend'
 # www.blender.org
 
-newmtl Material.001
+newmtl マテリアル
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
-Kd 0.000000 0.000000 0.000000
 Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd Resources/uvChecker.png
+map_Kd C:/Users/小野田悠月/OneDrive/画像/ドキュメント/Blender4.1/Resolus/画像/uvChecker.png

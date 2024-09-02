@@ -1,17 +1,18 @@
 #pragma once
 
 #include "Audio.h"
+#include "DebugCamera.h"
 #include "DirectXCommon.h"
+#include "Enemy.h"
 #include "Input.h"
 #include "Model.h"
+#include "Player.h"
+#include "RailCamera.h"
+#include "Skydome.h"
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
-#include "Player.h"
-#include "Enemy.h"
-#include "Skydome.h"
-#include "RailCamera.h"
-#include "DebugCamera.h"
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -39,10 +40,13 @@ public: // メンバ関数
 	void Update();
 
 	/// <summary>
-	/// 描画　
+	/// 描画
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// 衝突判定と応答
+	/// </summary>
 	void CheckAllCollisions();
 
 private: // メンバ変数
@@ -50,38 +54,30 @@ private: // メンバ変数
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
 
-	// スプライト
-	//Sprite* sprite_ = nullptr;
-	
-	uint32_t textureHandle_= 0;
-
-	//　3Dモデル
+	// テクスチャハンドル
+	uint32_t textureHandle_ = 0u;
+	uint32_t EnemytextureHandle_ = 0u;
+	// 3Dモデルデータ
 	Model* model_ = nullptr;
-
-	Player* player_ = nullptr;
-
-	Enemy* enemy_ = nullptr;
-
-	Skydome* skydome_ = nullptr;
-
-	Model* modelSkydome_ = nullptr;
-
-	//レールカメラ
-	RailCamera* railCamera_ = nullptr;
-
-	// ワールドトランスフォーム
-	WorldTransform worldTransform_;
 	// ビュープロジェクション
 	ViewProjection viewProjection_;
 
-	// ImGuiで値を入力する変数
-	//float inputFloat3[3] = {0, 0, 0};
+	// 自キャラ
+	Player* player_ = nullptr;
 
-	//デバッグカメラ有効
+	// デバックカメラ有効
 	bool isDebugCameraActive_ = false;
-
-	// デバッグカメラ
+	// デバックカメラ
 	DebugCamera* debugCamera_ = nullptr;
+	// 敵キャラ
+	Enemy* enemy_ = nullptr;
+
+	// 3Dモデル(天球)
+	Model* modelSkydome_ = nullptr;
+	// 天球
+	Skydome* skydome_ = nullptr;
+	// カメラ
+	RailCamera* railCamera_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用

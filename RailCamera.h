@@ -1,42 +1,31 @@
 #pragma once
-#include "WorldTransform.h"
+#include "ImGuiManager.h"
+#include "MatRix.h"
 #include "ViewProjection.h"
-#include "Model.h"
-#include "Matrix.h"
-#include"Matrix4x4.h"
+#include <Model.h>
+#include <WorldTransform.h>
+#include <cassert>
+#include <imgui.h>
 
 class RailCamera {
-
 public:
-
-	/// <summary>
-	/// 初期化
-	/// </summary>
-	void Initialize(Vector3 worldTransform,Vector3 rotation);
-
-
-	/// <summary>
-	/// 更新
-	/// </summary>
+	// 初期化
+	void Initialize(Vector3 position, Vector3 rotation);
+	// 更新処理
 	void Update();
 
-	// ビュープロジェクションの取得関数
-	//Matrix4x4& GetViewProjectionMatrix();
+	const WorldTransform& GetWorldTransform() { return worldTransform_; }
+	const ViewProjection& GetViewProjection() { return viewProjection_; }
 
-	const WorldTransform& GetWorldTransform() const { return worldTransform_; }
-	const ViewProjection& GetViewProjection() const { return viewProjection_; }
+	const ViewProjection& GetView() { return viewProjection_; }
+	const ViewProjection& GetProjection() { return viewProjection_; }
 
-	const Matrix4x4& GetView() { return viewProjection_.matView; }
-	const Matrix4x4& GetWorld() { return viewProjection_.matProjection; }
+	// ワールド座標を取得
+	// const WorldTransform GetWorldPosition();
 
 private:
-
 	// ワールド変換データ
 	WorldTransform worldTransform_;
-
 	// ビュープロジェクション
 	ViewProjection viewProjection_;
-
-	Vector3 velocity{1,1,1};
-
 };

@@ -1,58 +1,55 @@
+
 #pragma once
-#include "Model.h"
-#include "WorldTransform.h"
-#include <Input.h>
+#include "MatRix.h"
 #include "PlayerBullet.h"
+#include <DirectXMath.h>
+#include <Input.h>
+#include <Model.h>
+#include <WorldTransform.h>
+#include <cassert>
+#include <imgui.h>
 #include <list>
 
 class Player {
-
 public:
-
-	/// <summary>
-	/// デストラクタ
-	/// </summary>
+	// デストラクタ
 	~Player();
-
-	void Initialize(Model* model,uint32_t textureHandle,Vector3 position);
-
+	// 初期化
+	void Initialize(Model* model, uint32_t textureHandle, Vector3 position);
+	// 更新処理
 	void Update();
-
+	// 描画処理
 	void Draw(ViewProjection& viewProjection);
-
-	/// <summary>
-	/// 攻撃
-	/// </summary>
+	// 攻撃
 	void Attack();
-
-
-	//衝突を検出したらコールバック関数
-	void OnCollision();
-
-	void SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }
 
 	// ワールド座標を取得
 	Vector3 GetWorldPosition();
 
-	WorldTransform& GetWorldTransform() { return worldTransform_; }
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
 
+	// 弾リストを取得
 	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
 
+	// 親となるワールドトランスフォームをセット
+	void SetParent(const WorldTransform* parent);
+
 private:
-
+	// ワールドトランスフォームの初期化
 	WorldTransform worldTransform_;
-
+	// 3Dモデル
 	Model* model_ = nullptr;
-
+	// テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
-
+	// キーボード入力
 	Input* input_ = nullptr;
 
-	Vector3 position_ = {0,0,0};
-
-	const float kRotSpeed = 0.02f;
-	//弾
+	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
+	// 弾
 	std::list<PlayerBullet*> bullets_;
-
-
+	// 発射タイマー
+	int32_t bulletsTimer_ = 0;
+	// リロードタイム
+	int32_t ReloadTime_ = 10;
 };

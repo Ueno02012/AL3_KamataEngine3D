@@ -1,100 +1,74 @@
 #pragma once
-#include "Model.h"
-#include "Vector3.h"
-#include "WorldTransform.h"
+#include<Model.h>
+#include<WorldTransform.h>
+#include<cassert>
+#include "TextureManager.h"
+#include"MatRix.h"
+#include<list>
+#include<Input.h>
+#include<DirectXMath.h>
 #include "EnemyBullet.h"
-#include <list>
 
+// 自機クラスの宣言
 class Player;
 
+enum class Phase {
+	approach, // 接近する
+	Leave,    // 離脱する
+};
 
 class Enemy {
-
-	// 行動フェーズ
-	enum class Phase {
-		Approach, // 接近
-		Leave     // 離脱
-	};
-
 public:
-
-	/// <summary>
-	/// デストラクタ
-	/// </summary>
+	// デストラクタ
 	~Enemy();
-
-	void Initialize(Model* model, const Vector3& position);
-
+	// 初期化
+	void Initialize(Model* model, uint32_t textureHandle);
+	// 更新処理
 	void Update();
-
+	// 描画処理
 	void Draw(const ViewProjection& viewProjection);
 
-	void InitializeApproach();
-
-	/// <summary>
-	/// 接近フェーズの更新関数
-	/// </summary>
-	void UpdateApproach();
-
-	/// <summary>
-	/// 離脱フェーズの更新関数
-	/// </summary>
-	void UpdateLeave();
-
-	/// <summary>
-	/// 弾発射
-	/// </summary>
+	// 接近速度
+	void ApproachMove(const float speed);
+	// 離脱速度
+	void LeavePhaseMove(const float speed);	
+	
+	// 攻撃
 	void Fire();
 
+	// 発射感覚
+	static const int kFireInterval = 60;
+	// 接近フェーズ初期化
+	void ApproachPhaseInitialize();
+
 	void SetPlayer(Player* player) { player_ = player; }
+
+	// ワールド座標を取得
+	Vector3 GetWorldPosition();
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();
 
-	float Length(const Vector3& v) {
-		Vector3 result{};
-		return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
-	}
-	// 正規化
-	Vector3 Nomalize(const Vector3& v) {
-		Vector3 result{};
-		result.x = v.x / Length(v);
-		result.y = v.y / Length(v);
-		result.z = v.z / Length(v);
-		return result;
-	}
-
-
-
-	// ワールド座標を入れる変数
-	Vector3 GetWorldPosition();
-
-	static const int kFireInterval = 60;
-
 	// 弾リストを取得
 	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
 
-
 private:
-
+	// ワールドトランスフォームの初期化
 	WorldTransform worldTransform_;
-
+	// 3Dモデル
 	Model* model_ = nullptr;
-
+	// テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
-
-	//自キャラ
-	Player* player_ = nullptr;
-
-
+	Input* input_ = nullptr;
+	
+	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 	// フェーズ
-	Phase phase_ = Phase::Approach;
-
-
-
-	int32_t FireTimer = 0;
-
+	Phase phase_ = Phase::approach;
 	// 弾
 	std::list<EnemyBullet*> bullets_;
+	// 発射タイマー
+	int32_t ReloadTimer_ = 0;
 
+	// 自キャラ
+	Player* player_ = nullptr;
 };
