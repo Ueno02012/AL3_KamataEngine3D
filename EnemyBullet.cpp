@@ -19,7 +19,7 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 	// 引数として受け取ったデータをメンバ変数に記録
 	model_ = model;
 	// テクスチャ読み込み
-	textureHandle_ = TextureManager::Load("EnemyBullet.png");
+	textureHandle_ = TextureManager::Load("black.png");
 	// ワールド変換の初期化
 	worldTransform_.Initialize();
 	// 引数で受け取った初期座標をセット

@@ -56,6 +56,10 @@ public:
 		return result;
 	}
 
+	/// <summary>
+	/// マウスでのレティクル操作
+	/// </summary>
+	void MouseUpdate();
 
 private:
 	// ワールドトランスフォームの初期化
