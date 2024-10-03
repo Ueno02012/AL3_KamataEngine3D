@@ -15,7 +15,7 @@ void RailCamera::Initialize(Vector3 position, Vector3 rotation) {
 
 void RailCamera::Update() {
 
-	// worldTransform_.translation_.z -= 1.0f;
+	//worldTransform_.translation_.z += 0.15f;
 	//worldTransform_.rotation_.y += 0.001f;
 	//  カメラオブジェクトのワールド行列からビュー行列を計算する
 	viewProjection_.matView = Inverse(worldTransform_.matWorld_);
