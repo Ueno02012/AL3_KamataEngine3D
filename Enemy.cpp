@@ -72,11 +72,18 @@ void Enemy::Update() {
 			Matrix4x4 translate = MakeTranslateMatrix(worldTransformBlock->translation_);
 		}
 	}
+	// ある程度まで近づいてきたら停止
+	if (worldTransform_.translation_.z <= 10.0f) {
+		worldTransform_.translation_.z = 10.0f;
+	}
 
 	// 定数バッファに転送する
 	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 	// 行列を定数バッファに転送
 	worldTransform_.TransferMatrix();
+	ImGui::Begin("Enemy");
+	ImGui::DragFloat3("Enemy", &worldTransform_.translation_.x, 0.01f);
+	ImGui::End();
 }
 
 
@@ -99,3 +106,4 @@ void Enemy::LeavePhaseMove(const float speed) {
 	worldTransform_.translation_.y += speed;
 	worldTransform_.translation_.z -= speed;
 }
+

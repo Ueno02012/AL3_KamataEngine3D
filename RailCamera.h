@@ -28,4 +28,5 @@ private:
 	WorldTransform worldTransform_;
 	// ビュープロジェクション
 	ViewProjection viewProjection_;
+
 };

@@ -31,7 +31,7 @@ void PlayerBullet::Update(){
 	// 座標を移動させる(1フレーム分の移動量を足しこむ)
 	worldTransform_.translation_.x += velocity_.x;
 	worldTransform_.translation_.y += velocity_.y;
-	worldTransform_.translation_.z += velocity_.z;
+   	worldTransform_.translation_.z += velocity_.z;
 	
 	// 時間経過でデス
 	if (--deathTimer_ <= 0) {
