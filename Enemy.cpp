@@ -81,9 +81,9 @@ void Enemy::Update() {
 	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 	// 行列を定数バッファに転送
 	worldTransform_.TransferMatrix();
-	ImGui::Begin("Enemy");
+	/*ImGui::Begin("Enemy");
 	ImGui::DragFloat3("Enemy", &worldTransform_.translation_.x, 0.01f);
-	ImGui::End();
+	ImGui::End();*/
 }
 
 

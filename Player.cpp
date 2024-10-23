@@ -118,9 +118,9 @@ void Player::Update() {
 	}
 
 	// キャラクターの座標を画面表示する処理
-	ImGui::Begin("Player");
-	ImGui::DragFloat3("Player", &worldTransform_.translation_.x, 0.01f);
-	ImGui::End();
+	//ImGui::Begin("Player");
+	//ImGui::DragFloat3("Player", &worldTransform_.translation_.x, 0.01f);
+	//ImGui::End();
 
 	// キャラクターの攻撃処理
 	Attack();

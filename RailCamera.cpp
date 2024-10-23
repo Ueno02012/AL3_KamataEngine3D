@@ -23,8 +23,8 @@ void RailCamera::Update() {
 	worldTransform_.UpdateMatrix();
 
 	// カメラの座標を画面表示する処理
-	ImGui::Begin("RailCamera");
-	ImGui::DragFloat3("translation", &worldTransform_.translation_.x, 0.01f);
-	ImGui::DragFloat3("rotation", &worldTransform_.rotation_.x, 0.01f);
-	ImGui::End();
+	//ImGui::Begin("RailCamera");
+	//ImGui::DragFloat3("translation", &worldTransform_.translation_.x, 0.01f);
+	//ImGui::DragFloat3("rotation", &worldTransform_.rotation_.x, 0.01f);
+	//ImGui::End();
 }
