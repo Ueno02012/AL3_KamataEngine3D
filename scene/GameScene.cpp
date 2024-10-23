@@ -26,6 +26,7 @@ GameScene::~GameScene() {
 	delete skydome_;
 	// レールカメラの解放
 	delete railCamera_;
+	delete barrierModel_;
 }
 
 void GameScene::Initialize() {
@@ -41,6 +42,7 @@ void GameScene::Initialize() {
 	model_ = Model::Create();
 	// 天球の生成
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	barrierModel_ = Model::CreateFromOBJ("barrier",true);
 
 	// ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -48,7 +50,7 @@ void GameScene::Initialize() {
 	// 自キャラの生成
 	player_ = new Player();
 	Vector3 PlayerPosition(0.0f, 0.0f, 40.0f);
-	player_->Initialize(model_, textureHandle_, PlayerPosition);
+	player_->Initialize(model_,barrierModel_, textureHandle_, PlayerPosition);
 
 	// デバックカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
@@ -140,81 +142,96 @@ void GameScene::CheckAllCollisions() {
 }
 
 void GameScene::Update() {
+	// プレイヤーが死んでいない場合のみ更新処理を行う
+	if (!player_->IsDead()) {
+		// 敵発生コマンドの更新
 
-	// 敵発生コマンドの更新
-	UpdateEnemyPopCommands();
+		// その他の更新処理...
 
-	// デスフラグの立った球を削除
-	enemyBullets_.remove_if([](EnemyBullet* bullet) {
-		if (bullet->IsDead()) {
-			delete bullet;
-			return true;
+		// 自キャラの更新
+
+		// 衝突判定と応答
+		CheckAllCollisions();
+
+		// 敵発生コマンドの更新
+		UpdateEnemyPopCommands();
+
+		// デスフラグの立った球を削除
+		enemyBullets_.remove_if([](EnemyBullet* bullet) {
+			if (bullet->IsDead()) {
+				delete bullet;
+				return true;
+			}
+			return false;
+		});
+
+		// デスフラグの立った球を削除
+		enemys_.remove_if([](Enemy* enemy) {
+			if (enemy->IsDead()) {
+				delete enemy;
+				return true;
+			}
+			return false;
+		});
+
+		// 発射タイマーカウントダウン
+		ReloadTimer_--;
+		// 指定時間に達したら
+		if (ReloadTimer_ <= 0) {
+			// 弾を発射
+			Fire();
+			ReloadTimer_ = kFireInterval;
 		}
-		return false;
-	});
-
-	// デスフラグの立った球を削除
-	enemys_.remove_if([](Enemy* enemy) {
-		if (enemy->IsDead()) {
-			delete enemy;
-			return true;
+		for (EnemyBullet* bullet : enemyBullets_) {
+			bullet->Update();
 		}
-		return false;
-	});
 
-	// 発射タイマーカウントダウン
-	ReloadTimer_--;
-	// 指定時間に達したら
-	if (ReloadTimer_ <= 0) {
-		// 弾を発射
-		Fire();
-		ReloadTimer_ = kFireInterval;
-	}
-	for (EnemyBullet* bullet : enemyBullets_) {
-		bullet->Update();
-	}
-
-	// 敵キャラの更新
-	for (Enemy* enemy : enemys_) {
-		enemy->Update();
-	}
-	// 衝突判定と応答
-	GameScene::CheckAllCollisions();
-	// 天球の更新
-	skydome_->Update();
-
-	// デバックカメラの更新
-	debugCamera_->Update();
-#ifdef _DEBUG
-	if (input_->TriggerKey(DIK_TAB)) {
-		if (isDebugCameraActive_ == true) {
-			isDebugCameraActive_ = false;
-		} else {
-			isDebugCameraActive_ = true;
+		// 敵キャラの更新
+		for (Enemy* enemy : enemys_) {
+			enemy->Update();
 		}
-	}
-#endif //  _DEBUG
+		// 衝突判定と応答
+		GameScene::CheckAllCollisions();
+		// 天球の更新
+		skydome_->Update();
 
-	// カメラの処理
-	if (isDebugCameraActive_) {
 		// デバックカメラの更新
 		debugCamera_->Update();
-		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
-		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
-		// ビュープロジェクション行列の転送
-		viewProjection_.TransferMatrix();
-	} else {
-		// レールカメラの更新
-		railCamera_->Update();
-		viewProjection_.matView = railCamera_->GetViewProjection().matView;
-		viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
-		// ビュープロジェクション行列の更新と転送
-		viewProjection_.TransferMatrix();
-	}
-	// 自キャラの更新
-	player_->Update();
-}
+#ifdef _DEBUG
+		if (input_->TriggerKey(DIK_TAB)) {
+			if (isDebugCameraActive_ == true) {
+				isDebugCameraActive_ = false;
+			} else {
+				isDebugCameraActive_ = true;
+			}
+		}
+#endif //  _DEBUG
 
+		// カメラの処理
+		if (isDebugCameraActive_) {
+			// デバックカメラの更新
+			debugCamera_->Update();
+			viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+			viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+			// ビュープロジェクション行列の転送
+			viewProjection_.TransferMatrix();
+		} else {
+			// レールカメラの更新
+			railCamera_->Update();
+			viewProjection_.matView = railCamera_->GetViewProjection().matView;
+			viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
+			// ビュープロジェクション行列の更新と転送
+			viewProjection_.TransferMatrix();
+		}
+		// 自キャラの更新
+		player_->Update();
+	} else {
+		// プレイヤーが死亡した場合の処理（例：ゲームオーバー画面への遷移など）
+		// ここにゲームオーバー時の処理を追加
+		// 例: GameOver();
+
+	}
+}
 void GameScene::Draw() {
 
 	// コマンドリストの取得

@@ -15,7 +15,7 @@ public:
 	// デストラクタ
 	~Player();
 	// 初期化
-	void Initialize(Model* model, uint32_t textureHandle, Vector3 position);
+	void Initialize(Model* model, Model* barrierModel, uint32_t textureHandle, Vector3 position);
 	// 更新処理
 	void Update();
 	// 描画処理
@@ -34,10 +34,13 @@ public:
 
 	// 親となるワールドトランスフォームをセット
 	void SetParent(const WorldTransform* parent);
+	bool IsDead() const { return isDead_; } // プレイヤーの死亡状態を確認する
 
 private:
 	// ワールドトランスフォームの初期化
 	WorldTransform worldTransform_;
+	WorldTransform worldTransformBarrier_;
+
 	// 3Dモデル
 	Model* model_ = nullptr;
 	// テクスチャハンドル
@@ -52,4 +55,10 @@ private:
 	int32_t bulletsTimer_ = 0;
 	// リロードタイム
 	int32_t ReloadTime_ = 10;
+
+	Model* barrierModel_;
+
+    int hp_;               // プレイヤーのHP
+	bool isDead_;          // プレイヤーが死んでいるかどうか
+	bool isBarrierActive_; // バリアが有効かどうかを管理
 };

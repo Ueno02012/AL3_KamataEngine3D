@@ -116,6 +116,8 @@ private: // メンバ変数
 	// カメラ
 	RailCamera* railCamera_ = nullptr;
 
+	Model* barrierModel_ = nullptr;
+
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
