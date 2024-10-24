@@ -4,7 +4,7 @@
 #include <cassert>
 #include <fstream>
 
-GameScene::GameScene() {}
+GameScene::GameScene():gameState_(GameState::Title) {}
 
 GameScene::~GameScene() {
 	// 3Dモデルデータの開放
@@ -27,6 +27,12 @@ GameScene::~GameScene() {
 	// レールカメラの解放
 	delete railCamera_;
 	delete barrierModel_;
+	//delete playerBulletModel_;
+	//delete enemyBulletModel_;
+	//delete barrierModel_;
+	//delete titleModel_;
+	//delete gameoverModel_;
+	//delete clearModel_;
 }
 
 void GameScene::Initialize() {
@@ -34,15 +40,24 @@ void GameScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
-
+	worldScene_.Initialize();
+	worldScene_.scale_ = {2, 2, 2};
+	worldScene_.translation_.y = -10.0f;
 	// ファイル名を指定してテクスチャを読み込む
 	textureHandle_ = TextureManager::Load("Player.png");
 	EnemytextureHandle_ = TextureManager::Load("Enemy.png");
 	// 3Dモデルデータの生成
-	model_ = Model::Create();
+	model_ = Model::CreateFromOBJ("Player",true);
+
+	playerBulletModel_ = Model::CreateFromOBJ("PlayerBullet", true);
+	enemyBulletModel_ = Model::CreateFromOBJ("EnemyBullet", true);
 	// 天球の生成
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 	barrierModel_ = Model::CreateFromOBJ("barrier",true);
+
+	titleModel_ = Model::CreateFromOBJ("titleText", true);
+	gameoverModel_ = Model::CreateFromOBJ("OVER", true);
+	clearModel_ = Model::CreateFromOBJ("Clear", true);
 
 	// ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -50,15 +65,17 @@ void GameScene::Initialize() {
 	// 自キャラの生成
 	player_ = new Player();
 	Vector3 PlayerPosition(0.0f, 0.0f, 40.0f);
-	player_->Initialize(model_,barrierModel_, textureHandle_, PlayerPosition);
+	player_->Initialize(model_,barrierModel_,playerBulletModel_, textureHandle_, PlayerPosition);
+
+	
 
 	// デバックカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
 
 	//	縦方向表示の表示を有効する
-	AxisIndicator::GetInstance()->SetVisible(true);
+	//AxisIndicator::GetInstance()->SetVisible(true);
 	// 縦方向表示が参照するビュープロジェクションを指定する(アドレス渡し)
-	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
+	//AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 
 	// 敵発生データの読み込み
 	LoadEnemyPopData();
@@ -116,6 +133,7 @@ void GameScene::CheckAllCollisions() {
 				enemy->OnCollision();
 				// 自弾の衝突時コールバックを呼び出す
 				bullet->OnCollision();
+				count += 1;
 			}
 		}
 	}
@@ -142,95 +160,122 @@ void GameScene::CheckAllCollisions() {
 }
 
 void GameScene::Update() {
+	switch (gameState_) {
+	case GameState::Title:
+		worldScene_.UpdateMatrix();
+		if (input_->TriggerKey(DIK_RETURN)) {
+			// ゲームプレイ初期化処理など
+			Initialize();
+			gameState_ = GameState::Play;
+		}
+		break;
 	// プレイヤーが死んでいない場合のみ更新処理を行う
-	if (!player_->IsDead()) {
-		// 敵発生コマンドの更新
+	case GameState::Play:
 
-		// その他の更新処理...
+		if (!player_->IsDead()) {
+			// 衝突判定と応答
+			CheckAllCollisions();
+			// 敵発生コマンドの更新
+			UpdateEnemyPopCommands();
 
-		// 自キャラの更新
+			// デスフラグの立った球を削除
+			enemyBullets_.remove_if([](EnemyBullet* bullet) {
+				if (bullet->IsDead()) {
+					delete bullet;
+					return true;
+				}
+				return false;
+			});
 
-		// 衝突判定と応答
-		CheckAllCollisions();
+			// デスフラグの立った球を削除
+			enemys_.remove_if([](Enemy* enemy) {
+				if (enemy->IsDead()) {
+					delete enemy;
+					return true;
+				}
+				return false;
+			});
 
-		// 敵発生コマンドの更新
-		UpdateEnemyPopCommands();
-
-		// デスフラグの立った球を削除
-		enemyBullets_.remove_if([](EnemyBullet* bullet) {
-			if (bullet->IsDead()) {
-				delete bullet;
-				return true;
+			// 発射タイマーカウントダウン
+			ReloadTimer_--;
+			// 指定時間に達したら
+			if (ReloadTimer_ <= 0) {
+				// 弾を発射
+				Fire();
+				ReloadTimer_ = kFireInterval;
 			}
-			return false;
-		});
-
-		// デスフラグの立った球を削除
-		enemys_.remove_if([](Enemy* enemy) {
-			if (enemy->IsDead()) {
-				delete enemy;
-				return true;
+			for (EnemyBullet* bullet : enemyBullets_) {
+				bullet->Update();
 			}
-			return false;
-		});
 
-		// 発射タイマーカウントダウン
-		ReloadTimer_--;
-		// 指定時間に達したら
-		if (ReloadTimer_ <= 0) {
-			// 弾を発射
-			Fire();
-			ReloadTimer_ = kFireInterval;
-		}
-		for (EnemyBullet* bullet : enemyBullets_) {
-			bullet->Update();
-		}
-
-		// 敵キャラの更新
-		for (Enemy* enemy : enemys_) {
-			enemy->Update();
-		}
-		// 衝突判定と応答
-		GameScene::CheckAllCollisions();
-		// 天球の更新
-		skydome_->Update();
-
-		// デバックカメラの更新
-		debugCamera_->Update();
-#ifdef _DEBUG
-		if (input_->TriggerKey(DIK_TAB)) {
-			if (isDebugCameraActive_ == true) {
-				isDebugCameraActive_ = false;
-			} else {
-				isDebugCameraActive_ = true;
+			// 敵キャラの更新
+			for (Enemy* enemy : enemys_) {
+				enemy->Update();
 			}
-		}
-#endif //  _DEBUG
+			// 衝突判定と応答
+			GameScene::CheckAllCollisions();
+			// 天球の更新
+			skydome_->Update();
 
-		// カメラの処理
-		if (isDebugCameraActive_) {
 			// デバックカメラの更新
 			debugCamera_->Update();
-			viewProjection_.matView = debugCamera_->GetViewProjection().matView;
-			viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
-			// ビュープロジェクション行列の転送
-			viewProjection_.TransferMatrix();
-		} else {
-			// レールカメラの更新
-			railCamera_->Update();
-			viewProjection_.matView = railCamera_->GetViewProjection().matView;
-			viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
-			// ビュープロジェクション行列の更新と転送
-			viewProjection_.TransferMatrix();
-		}
-		// 自キャラの更新
-		player_->Update();
-	} else {
-		// プレイヤーが死亡した場合の処理（例：ゲームオーバー画面への遷移など）
-		// ここにゲームオーバー時の処理を追加
-		// 例: GameOver();
+#ifdef _DEBUG
+			if (input_->TriggerKey(DIK_TAB)) {
+				if (isDebugCameraActive_ == true) {
+					isDebugCameraActive_ = false;
+				} else {
+					isDebugCameraActive_ = true;
+				}
+			}
+#endif //  _DEBUG
 
+			// カメラの処理
+			if (isDebugCameraActive_) {
+				// デバックカメラの更新
+				debugCamera_->Update();
+				viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+				viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+				// ビュープロジェクション行列の転送
+				viewProjection_.TransferMatrix();
+			} else {
+				// レールカメラの更新
+				railCamera_->Update();
+				viewProjection_.matView = railCamera_->GetViewProjection().matView;
+				viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
+				// ビュープロジェクション行列の更新と転送
+				viewProjection_.TransferMatrix();
+			}
+			// 自キャラの更新
+			player_->Update();
+			// ゲームクリアの判定
+			if (count==5) {
+				gameState_ = GameState::Clear;
+			}
+		} else {
+			gameState_ = GameState::GameOver;
+		}
+		break;
+	case GameState::Clear:
+		worldScene_.UpdateMatrix();
+		if (input_->PushKey(DIK_RETURN)) {
+			gameState_ = GameState::Title; // タイトル画面に戻る
+			count = 0;
+			player_->SetHp();
+		}
+		break;
+
+	case GameState::GameOver:
+		worldScene_.UpdateMatrix();
+		if (input_->PushKey(DIK_RETURN)) {
+			gameState_ = GameState::Title; // タイトル画面に戻る
+			count = 0;
+			player_->SetHp();
+		}
+		break;
 	}
+//		ImGui::Begin("Life");
+//		ImGui::Text("Life:%d", player_->GetHp());
+//		ImGui::End();
 }
 void GameScene::Draw() {
 
@@ -245,6 +290,19 @@ void GameScene::Draw() {
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 
+	//switch (gameState_) {
+	//case GameScene::GameState::Title:
+	//	break;
+	//case GameScene::GameState::Play:
+	//	break;
+	//case GameScene::GameState::Clear:
+	//	break;
+	//case GameScene::GameState::GameOver:
+	//	break;
+	//default:
+	//	break;
+	//}
+
 	// スプライト描画後処理
 	Sprite::PostDraw();
 	// 深度バッファクリア
@@ -257,22 +315,35 @@ void GameScene::Draw() {
 
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
+	switch (gameState_) {
+	case GameScene::GameState::Title:
+		titleModel_->Draw(worldScene_, viewProjection_);
+		break;
+	case GameScene::GameState::Play:
+		// 自キャラの描画
+		player_->Draw(viewProjection_);
+		
+		// 敵キャラの描画
+		for (Enemy* enemy : enemys_) {
+			enemy->Draw(viewProjection_);
+		}
+		//	敵の弾の描画
+		for (EnemyBullet* bullet : enemyBullets_) {
+			bullet->Draw(viewProjection_);
+		}
 
-	// 自キャラの描画
-	player_->Draw(viewProjection_);
-
-	// 敵キャラの描画
-	for (Enemy* enemy : enemys_) {
-		enemy->Draw(viewProjection_);
+		// 天球の描画
+		skydome_->Draw();
+		break;
+	case GameScene::GameState::Clear:
+		clearModel_->Draw(worldScene_, viewProjection_);
+		break;
+	case GameScene::GameState::GameOver:
+		gameoverModel_->Draw(worldScene_, viewProjection_);
+		break;
+	default:
+		break;
 	}
-	//	敵の弾の描画
-	for (EnemyBullet* bullet : enemyBullets_) {
-		bullet->Draw(viewProjection_);
-	}
-
-	// 天球の描画
-	skydome_->Draw();
-
 	/// </summary>
 
 	// 3Dオブジェクト描画後処理
@@ -324,7 +395,7 @@ void GameScene::Fire() {
 
 		// 球を生成し、初期化
 		EnemyBullet* newBullet = new EnemyBullet();
-		newBullet->Initialize(model_, {position.x, position.y, position.z}, velocity);
+		newBullet->Initialize(enemyBulletModel_, {position.x, position.y, position.z}, velocity);
 		// 球を登録する
 		AddEnemyBullet(newBullet);
 	}

@@ -3,7 +3,7 @@
 #include<WorldTransform.h>
 #include<cassert>
 #include "ViewProjection.h"
-#include<imgui.h>
+//#include<imgui.h>
 
 class Skydome {
 public:

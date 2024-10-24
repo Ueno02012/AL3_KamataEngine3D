@@ -13,6 +13,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include <sstream>
+#include<list>
 
 /// <summary>
 /// ゲームシーン
@@ -20,6 +21,14 @@
 class GameScene {
 
 public: // メンバ関数
+
+	enum class GameState { 
+	 Title, 
+	 Play, 
+	 Clear,
+	 GameOver 
+	};
+
 	/// <summary>
 	/// コンストクラタ
 	/// </summary>
@@ -74,6 +83,10 @@ public: // メンバ関数
 
 	void EnemyPop(Vector3 v);
 
+	//void DrawTitleScreen();    // タイトル画面の描画
+	//void DrawClearScreen();    // クリア画面の描画
+	//void DrawGameOverScreen(); // ゲームオーバー画面の描画
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -90,7 +103,7 @@ private: // メンバ変数
 
 	// 自キャラ
 	Player* player_ = nullptr;
-
+	int count = 0;
 	// デバックカメラ有効
 	bool isDebugCameraActive_ = false;
 	// デバックカメラ
@@ -117,6 +130,16 @@ private: // メンバ変数
 	RailCamera* railCamera_ = nullptr;
 
 	Model* barrierModel_ = nullptr;
+	Model* playerBulletModel_ = nullptr;
+	Model* enemyBulletModel_ = nullptr;
+	GameState gameState_; // ゲームの現在の状態を保持
+
+	WorldTransform worldScene_;
+
+	Model* titleModel_ = nullptr;
+	Model* clearModel_ = nullptr;
+	Model* gameoverModel_ = nullptr;
+
 
 	/// <summary>
 	/// ゲームシーン用

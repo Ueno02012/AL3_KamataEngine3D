@@ -7,7 +7,7 @@
 #include <Model.h>
 #include <WorldTransform.h>
 #include <cassert>
-#include <imgui.h>
+//#include <imgui.h>
 #include <list>
 
 class Player {
@@ -15,7 +15,7 @@ public:
 	// デストラクタ
 	~Player();
 	// 初期化
-	void Initialize(Model* model, Model* barrierModel, uint32_t textureHandle, Vector3 position);
+	void Initialize(Model* model, Model* barrierModel,Model* bulletModel, uint32_t textureHandle, Vector3 position);
 	// 更新処理
 	void Update();
 	// 描画処理
@@ -35,6 +35,8 @@ public:
 	// 親となるワールドトランスフォームをセット
 	void SetParent(const WorldTransform* parent);
 	bool IsDead() const { return isDead_; } // プレイヤーの死亡状態を確認する
+	void SetHp() { hp_ = 0; }
+	int GetHp() const { return hp_; }
 
 private:
 	// ワールドトランスフォームの初期化
@@ -43,6 +45,7 @@ private:
 
 	// 3Dモデル
 	Model* model_ = nullptr;
+	Model* bulletModel_ = nullptr;
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
 	// キーボード入力

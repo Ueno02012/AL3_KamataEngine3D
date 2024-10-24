@@ -36,22 +36,26 @@ Player::~Player() {
 	}
 }
 
-void Player::Initialize(Model* model, Model* barrierModel,uint32_t textureHandle, Vector3 position) {
+void Player::Initialize(Model* model, Model* barrierModel,Model* bulletModel, uint32_t textureHandle, Vector3 position) {
 	assert(model);
 	assert(barrierModel);
+	assert(bulletModel);
 	// 引数として受け取ったデータをメンバ変数に記録
 	model_ = model;
+	bulletModel_ = bulletModel;
 	textureHandle_ = textureHandle;
 	// ワールド変換の初期化
 	worldTransform_.Initialize();
 	worldTransformBarrier_.Initialize();
 	worldTransformBarrier_.scale_ = {2, 2, 2};
 	worldTransform_.translation_ = position;
+	worldTransform_.translation_.z = -3.0f;
+
 	// シングルトンインスタンスを取得する
 	input_ = Input::GetInstance();
 
 	// プレイヤーのHPを初期化
-	hp_ = 10;                 // 10回弾に当たると死ぬ
+	hp_ = 30;                 // 10回弾に当たると死ぬ
 	isDead_ = false;          // 最初は生きている
 	isBarrierActive_ = false; // 最初はバリアがない
 	barrierModel_ = barrierModel; // バリアのモデルは必要なら外部から渡す
@@ -148,7 +152,7 @@ void Player::Attack() {
 			Vector3 velocity(0, 0, kBulletSpeed);
 			velocity = TransformNormal(velocity, worldTransform_.matWorld_);
 			PlayerBullet* newBullet = new PlayerBullet();
-			newBullet->Initialize(model_, {position.x, position.y, position.z}, velocity);
+			newBullet->Initialize(bulletModel_, {position.x, position.y, position.z}, velocity);
 			bullets_.push_back(newBullet);
 
 			bulletsTimer_ = ReloadTime_;
