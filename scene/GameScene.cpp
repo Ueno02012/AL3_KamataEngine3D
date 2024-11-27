@@ -27,12 +27,12 @@ GameScene::~GameScene() {
 	// レールカメラの解放
 	delete railCamera_;
 	delete barrierModel_;
-	//delete playerBulletModel_;
-	//delete enemyBulletModel_;
+	delete playerBulletModel_;
+	delete enemyBulletModel_;
 	//delete barrierModel_;
-	//delete titleModel_;
-	//delete gameoverModel_;
-	//delete clearModel_;
+	delete titleModel_;
+	delete gameoverModel_;
+	delete clearModel_;
 }
 
 void GameScene::Initialize() {
@@ -72,10 +72,6 @@ void GameScene::Initialize() {
 	// デバックカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
 
-	//	縦方向表示の表示を有効する
-	//AxisIndicator::GetInstance()->SetVisible(true);
-	// 縦方向表示が参照するビュープロジェクションを指定する(アドレス渡し)
-	//AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 
 	// 敵発生データの読み込み
 	LoadEnemyPopData();
@@ -290,18 +286,20 @@ void GameScene::Draw() {
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 
-	//switch (gameState_) {
-	//case GameScene::GameState::Title:
-	//	break;
-	//case GameScene::GameState::Play:
-	//	break;
-	//case GameScene::GameState::Clear:
-	//	break;
-	//case GameScene::GameState::GameOver:
-	//	break;
-	//default:
-	//	break;
-	//}
+	switch (gameState_) {
+	case GameScene::GameState::Title:
+		break;
+	case GameScene::GameState::Play:
+		break;
+	case GameScene::GameState::Clear:
+		// 2Dの背景を出す場所
+
+		break;
+	case GameScene::GameState::GameOver:
+		break;
+	default:
+		break;
+	}
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -336,6 +334,8 @@ void GameScene::Draw() {
 		skydome_->Draw();
 		break;
 	case GameScene::GameState::Clear:
+		
+
 		clearModel_->Draw(worldScene_, viewProjection_);
 		break;
 	case GameScene::GameState::GameOver:
