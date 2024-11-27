@@ -1,5 +1,6 @@
 #include "Enemy.h"
 #include "Player.h"
+#include <imgui.h>
 
 void Enemy::OnCollision() { 
 	hp_ -= 10;
@@ -49,8 +50,8 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle,Vector3 Position) {
 void Enemy::Update() {
 
 	// キャラクターの移動速さ
-	const float approachSpeed = 0.05f;
-	const float LeaveSpeed = 0.1f;
+	const float approachSpeed = 0.08f;
+	const float LeaveSpeed = 0.05f;
 	switch (phase_) {
 	case Phase::approach:
 	default:
@@ -84,14 +85,17 @@ void Enemy::Update() {
 	if (worldTransform_.translation_.z <= 10.0f) {
 		worldTransform_.translation_.z = 10.0f;
 	}
+	//if (worldTransform_.translation_.y >= -5.0f) {
+	//	worldTransform_.translation_.y = -5.0f;
+	//}
 
 	// 定数バッファに転送する
 	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 	// 行列を定数バッファに転送
 	worldTransform_.TransferMatrix();
-	/*ImGui::Begin("Enemy");
+	ImGui::Begin("Enemy");
 	ImGui::DragFloat3("Enemy", &worldTransform_.translation_.x, 0.01f);
-	ImGui::End();*/
+	ImGui::End();
 }
 
 
@@ -104,14 +108,19 @@ void Enemy::ApproachMove(const float speed) {
 	// 移動(ベクトルを加算)
 	worldTransform_.translation_.z -= speed;
 	// 規定の位置に到達したら離脱
-	if (worldTransform_.translation_.z < 0.0f) {
-		// phase_ = Phase::Leave;
+	if (worldTransform_.translation_.z <= 10.0f) {
+		phase_ = Phase::Leave;
 	}
 }
 void Enemy::LeavePhaseMove(const float speed) {
 	// 移動(ベクトルを加算)
-	worldTransform_.translation_.x += speed;
-	worldTransform_.translation_.y += speed;
-	worldTransform_.translation_.z -= speed;
+	if (worldTransform_.translation_.x <= 5.0f) {
+		worldTransform_.translation_.x += speed;
+
+	}
+	if (worldTransform_.translation_.y >= -5.0f) {
+		worldTransform_.translation_.y -= speed;
+	}
+	//worldTransform_.translation_.z -= speed;
 }
 

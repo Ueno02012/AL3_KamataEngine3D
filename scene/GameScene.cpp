@@ -40,8 +40,9 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 	worldScene_.Initialize();
-	worldScene_.scale_ = {2, 2, 2};
-	worldScene_.translation_.y = -10.0f;
+	worldScene_.scale_ = {3, 3, 3};
+	worldScene_.translation_.x = -15.0f;
+	worldScene_.translation_.y = 0.0f;
 	// ファイル名を指定してテクスチャを読み込む
 	textureHandle_ = TextureManager::Load("Player.png");
 	EnemytextureHandle_ = TextureManager::Load("Enemy.png");
@@ -54,7 +55,7 @@ void GameScene::Initialize() {
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 	barrierModel_ = Model::CreateFromOBJ("barrier",true);
 
-	titleModel_ = Model::CreateFromOBJ("titleText", true);
+	titleModel_ = Model::CreateFromOBJ("Title", true);
 	gameoverModel_ = Model::CreateFromOBJ("OVER", true);
 	clearModel_ = Model::CreateFromOBJ("Clear", true);
 
