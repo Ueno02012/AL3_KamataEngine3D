@@ -3,7 +3,6 @@
 #include "TextureManager.h"
 #include <cassert>
 #include <fstream>
-
 GameScene::GameScene():gameState_(GameState::Title) {}
 
 GameScene::~GameScene() {
@@ -58,6 +57,18 @@ void GameScene::Initialize() {
 	titleModel_ = Model::CreateFromOBJ("titleText", true);
 	gameoverModel_ = Model::CreateFromOBJ("OVER", true);
 	clearModel_ = Model::CreateFromOBJ("Clear", true);
+
+	// UIテクスチャの読み込み
+	hpBarBackgroundHandle_ = TextureManager::Load("HPBarBackground.png");
+	hpBarHandle_ = TextureManager::Load("HPBar.png");
+
+	// 自機HPバーの生成
+	playerHpBarBackground_ = Sprite::Create(hpBarBackgroundHandle_, {50, 50});
+	playerHpBar_ = Sprite::Create(hpBarHandle_, {60, 60}); // 背景より少し内側に配置
+
+	// 敵HPバーの生成
+	enemyHpBarBackground_ = Sprite::Create(hpBarBackgroundHandle_, {50, 100});
+	enemyHpBar_ = Sprite::Create(hpBarHandle_, {60, 110});
 
 	// ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -129,7 +140,8 @@ void GameScene::CheckAllCollisions() {
 				enemy->OnCollision();
 				// 自弾の衝突時コールバックを呼び出す
 				bullet->OnCollision();
-				count += 1;
+				//count += 1;
+				//enemy->GetHp();
 			}
 		}
 	}
@@ -159,6 +171,7 @@ void GameScene::Update() {
 	switch (gameState_) {
 	case GameState::Title:
 		worldScene_.UpdateMatrix();
+		player_->SetHp();
 		if (input_->TriggerKey(DIK_RETURN)) {
 			// ゲームプレイ初期化処理など
 			Initialize();
@@ -213,6 +226,7 @@ void GameScene::Update() {
 			// 天球の更新
 			skydome_->Update();
 
+
 			// デバックカメラの更新
 			debugCamera_->Update();
 #ifdef _DEBUG
@@ -244,7 +258,7 @@ void GameScene::Update() {
 			// 自キャラの更新
 			player_->Update();
 			// ゲームクリアの判定
-			if (count==5) {
+			if (isEnemySpawned_ && enemys_.empty()) {
 				gameState_ = GameState::Clear;
 			}
 		} else {
@@ -486,6 +500,7 @@ void GameScene::EnemyPop(Vector3 v) {
 
 	if (!enemys_.empty()) {
 		return;
+
 	}
 	// 敵キャラの生成
 	Enemy* enemy = new Enemy();
@@ -497,5 +512,7 @@ void GameScene::EnemyPop(Vector3 v) {
 	// 敵キャラにゲームシーンを渡す
 	enemy->SetGameScene(this);
 	enemys_.push_back(enemy);
+	// 敵生成済みフラグを設定
+	isEnemySpawned_ = true;
 	
 }

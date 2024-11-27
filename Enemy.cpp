@@ -1,7 +1,10 @@
 #include "Enemy.h"
 #include "Player.h"
 
-void Enemy::OnCollision() { isDead_ = true; };
+void Enemy::OnCollision() { 
+	hp_ -= 10;
+		isDead_ = true;
+};
 
 Vector3 Enemy::GetWorldPosition() {
 	// ワールド座標を入れる変数
@@ -36,6 +39,9 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle,Vector3 Position) {
 	worldTransform_.translation_ = Position;
 	worldTransform_.Initialize();
 	input_ = Input::GetInstance();
+	hp_ = 100; // 10回弾に当たると死ぬ
+	maxHp_ = 100;
+	isDead_ = false; // 最初は生きている
 }
 
 void Enemy::Update() {

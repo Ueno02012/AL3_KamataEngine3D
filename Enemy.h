@@ -7,8 +7,9 @@
 #include <Model.h>
 #include <WorldTransform.h>
 #include <cassert>
-#include <list>
+#include <algorithm>
 
+#include <list>
 // 自機クラスの宣言
 class Player;
 
@@ -52,6 +53,10 @@ public:
 	void OnCollision();
 
 	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
+	// HPのゲッター
+	int GetHp() const { return hp_; }
+	int GetMaxHp() const { return maxHp_; }
+	//void SetHp() { hp_ = 0; }
 
 	bool IsDead() const { return isDead_; }
 
@@ -72,5 +77,7 @@ private:
 	// ゲームシーン
 	GameScene* gameScene_ = nullptr;
 	// デスフラグ
-	bool isDead_ = false;
+	bool isDead_;
+	int hp_;    // 現在のHP
+	int maxHp_; // 最大HP
 };

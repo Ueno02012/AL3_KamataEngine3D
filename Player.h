@@ -37,6 +37,7 @@ public:
 	bool IsDead() const { return isDead_; } // プレイヤーの死亡状態を確認する
 	void SetHp() { hp_ = 0; }
 	int GetHp() const { return hp_; }
+	int GetMaxHp() const { return maxhp_; }
 
 private:
 	// ワールドトランスフォームの初期化
@@ -61,7 +62,8 @@ private:
 
 	Model* barrierModel_;
 
-    int hp_;               // プレイヤーのHP
+    int hp_=100;  // プレイヤーのHP
+	int maxhp_ = 100;
 	bool isDead_;          // プレイヤーが死んでいるかどうか
 	bool isBarrierActive_; // バリアが有効かどうかを管理
 };

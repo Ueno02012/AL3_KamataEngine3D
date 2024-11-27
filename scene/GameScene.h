@@ -103,6 +103,8 @@ private: // メンバ変数
 
 	// 自キャラ
 	Player* player_ = nullptr;
+
+	Enemy* enemy_ = nullptr;
 	int count = 0;
 	// デバックカメラ有効
 	bool isDebugCameraActive_ = false;
@@ -140,8 +142,19 @@ private: // メンバ変数
 	Model* clearModel_ = nullptr;
 	Model* gameoverModel_ = nullptr;
 
+	// UIスプライト
+	uint32_t hpBarBackgroundHandle_; // HPバー背景
+	uint32_t hpBarHandle_;           // HPバー
+	Sprite* playerHpBarBackground_;  // 自機HPバー背景スプライト
+	Sprite* playerHpBar_;            // 自機HPバースプライト
+	Sprite* enemyHpBarBackground_;   // 敵HPバー背景スプライト
+	Sprite* enemyHpBar_;             // 敵HPバースプライト
 
+	bool isEnemySpawned_ = false; // 敵が生成されたかどうかを管理するフラグ
 	/// <summary>
-	/// ゲームシーン用
-	/// </summary>
+/// ゲームシーン用
+/// </summary>
+
+
 };
+

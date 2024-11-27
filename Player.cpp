@@ -8,7 +8,7 @@ void Player::OnCollision() {
 	}
 	// それ以外の通常の衝突処理
 	// バリアがない状態で敵の弾に当たった場合、HPを減少させる
-	hp_--;
+	hp_-=5;
 
 	// HPが0以下になったら死亡フラグを立てる
 	if (hp_ <= 0) {
@@ -55,7 +55,8 @@ void Player::Initialize(Model* model, Model* barrierModel,Model* bulletModel, ui
 	input_ = Input::GetInstance();
 
 	// プレイヤーのHPを初期化
-	hp_ = 30;                 // 10回弾に当たると死ぬ
+	hp_ = 100;                 // 10回弾に当たると死ぬ
+	maxhp_ = 100;
 	isDead_ = false;          // 最初は生きている
 	isBarrierActive_ = false; // 最初はバリアがない
 	barrierModel_ = barrierModel; // バリアのモデルは必要なら外部から渡す
