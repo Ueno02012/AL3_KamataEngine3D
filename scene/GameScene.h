@@ -152,6 +152,9 @@ private: // メンバ変数
 	Sprite* enemyHpBar_;             // 敵HPバースプライト
 
 	bool isEnemySpawned_ = false; // 敵が生成されたかどうかを管理するフラグ
+
+	uint32_t BGM_ = 0;
+	uint32_t NowBgm = 0;
 	/// <summary>
 /// ゲームシーン用
 /// </summary>

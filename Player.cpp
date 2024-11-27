@@ -97,10 +97,10 @@ void Player::Update() {
 	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
 	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
 
-	// バリアのON/OFF
-	if (input_->TriggerKey(DIK_RETURN)) {
-		isBarrierActive_ = !isBarrierActive_; // バリアの状態を反転
-	}
+	//// バリアのON/OFF
+	//if (input_->TriggerKey(DIK_RETURN)) {
+	//	isBarrierActive_ = !isBarrierActive_; // バリアの状態を反転
+	//}
 
 	if (isBarrierActive_) {
 		// バリアが有効な場合、プレイヤーは攻撃できない

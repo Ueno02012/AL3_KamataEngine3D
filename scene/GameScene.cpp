@@ -58,6 +58,9 @@ void GameScene::Initialize() {
 	gameoverModel_ = Model::CreateFromOBJ("OVER", true);
 	clearModel_ = Model::CreateFromOBJ("Clear", true);
 
+
+	BGM_ = audio_->LoadWave("BGM.wav");
+
 	// UIテクスチャの読み込み
 	hpBarBackgroundHandle_ = TextureManager::Load("HPBarBackground.png");
 	hpBarHandle_ = TextureManager::Load("HPBar.png");
@@ -181,13 +184,11 @@ void GameScene::Update() {
 		break;
 	// プレイヤーが死んでいない場合のみ更新処理を行う
 	case GameState::Play:
-
 		if (!player_->IsDead()) {
 			// 衝突判定と応答
 			CheckAllCollisions();
 			// 敵発生コマンドの更新
 			UpdateEnemyPopCommands();
-
 			// デスフラグの立った球を削除
 			enemyBullets_.remove_if([](EnemyBullet* bullet) {
 				if (bullet->IsDead()) {
@@ -268,6 +269,8 @@ void GameScene::Update() {
 		break;
 	case GameState::Clear:
 		worldScene_.UpdateMatrix();
+
+			audio_->StopWave(NowBgm);
 		if (input_->PushKey(DIK_RETURN)) {
 			gameState_ = GameState::Title; // タイトル画面に戻る
 			count = 0;
@@ -277,6 +280,7 @@ void GameScene::Update() {
 
 	case GameState::GameOver:
 		worldScene_.UpdateMatrix();
+		audio_->StopWave(NowBgm);
 		if (input_->PushKey(DIK_RETURN)) {
 			gameState_ = GameState::Title; // タイトル画面に戻る
 			count = 0;
@@ -335,7 +339,7 @@ void GameScene::Draw() {
 	case GameScene::GameState::Play:
 		// 自キャラの描画
 		player_->Draw(viewProjection_);
-		
+
 		// 敵キャラの描画
 		for (Enemy* enemy : enemys_) {
 			enemy->Draw(viewProjection_);
@@ -524,5 +528,7 @@ void GameScene::Start() {
 			return true;
 	});
 	LoadEnemyPopData();
+	NowBgm = audio_->PlayWave(BGM_);
+	
 	isEnemySpawned_ = false;
 }

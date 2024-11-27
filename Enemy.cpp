@@ -3,7 +3,9 @@
 
 void Enemy::OnCollision() { 
 	hp_ -= 10;
+	if (hp_ <= 0) {
 		isDead_ = true;
+	}
 };
 
 Vector3 Enemy::GetWorldPosition() {
