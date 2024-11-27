@@ -83,6 +83,7 @@ public: // メンバ関数
 
 	void EnemyPop(Vector3 v);
 
+	void Start();
 	//void DrawTitleScreen();    // タイトル画面の描画
 	//void DrawClearScreen();    // クリア画面の描画
 	//void DrawGameOverScreen(); // ゲームオーバー画面の描画

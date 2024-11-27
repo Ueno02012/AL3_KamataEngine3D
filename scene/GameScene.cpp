@@ -176,6 +176,7 @@ void GameScene::Update() {
 			// ゲームプレイ初期化処理など
 			Initialize();
 			gameState_ = GameState::Play;
+			Start();
 		}
 		break;
 	// プレイヤーが死んでいない場合のみ更新処理を行う
@@ -515,4 +516,13 @@ void GameScene::EnemyPop(Vector3 v) {
 	// 敵生成済みフラグを設定
 	isEnemySpawned_ = true;
 	
+}
+
+void GameScene::Start() {
+	enemys_.remove_if([](Enemy* enemy) {
+			delete enemy;
+			return true;
+	});
+	LoadEnemyPopData();
+	isEnemySpawned_ = false;
 }
