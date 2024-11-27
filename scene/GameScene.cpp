@@ -56,8 +56,8 @@ void GameScene::Initialize() {
 	barrierModel_ = Model::CreateFromOBJ("barrier",true);
 
 	titleModel_ = Model::CreateFromOBJ("Title", true);
-	gameoverModel_ = Model::CreateFromOBJ("OVER", true);
-	clearModel_ = Model::CreateFromOBJ("Clear", true);
+	gameoverModel_ = Model::CreateFromOBJ("GAMEOVER", true);
+	clearModel_ = Model::CreateFromOBJ("GAMEClEAR", true);
 
 
 	BGM_ = audio_->LoadWave("BGM.wav");
@@ -335,6 +335,7 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	switch (gameState_) {
 	case GameScene::GameState::Title:
+		worldScene_.translation_.x = -17.0f;
 		titleModel_->Draw(worldScene_, viewProjection_);
 		break;
 	case GameScene::GameState::Play:
@@ -354,11 +355,11 @@ void GameScene::Draw() {
 		skydome_->Draw();
 		break;
 	case GameScene::GameState::Clear:
-		
-
+		worldScene_.translation_.x = -10.0f;
 		clearModel_->Draw(worldScene_, viewProjection_);
 		break;
 	case GameScene::GameState::GameOver:
+		worldScene_.translation_.x =-10.0f;
 		gameoverModel_->Draw(worldScene_, viewProjection_);
 		break;
 	default:
