@@ -183,7 +183,7 @@ void GameScene::Update() {
 				return false;
 			});
 
-			// デスフラグの立った球を削除
+			// デスフラグの立った敵を削除
 			enemys_.remove_if([](Enemy* enemy) {
 				if (enemy->IsDead()) {
 					delete enemy;
@@ -483,12 +483,19 @@ void GameScene::UpdateEnemyPopCommands() {
 }
 
 void GameScene::EnemyPop(Vector3 v) {
+
+	if (!enemys_.empty()) {
+		return;
+	}
 	// 敵キャラの生成
 	Enemy* enemy = new Enemy();
+	Vector3 initialPosition = {0.0f, 5.0f, 50.0f};
+	v = initialPosition;
 	enemy->Initialize(model_, EnemytextureHandle_,v);
 	// 敵キャラに自キャラのアドレスを渡す
 	enemy->SetPlayer(player_);
 	// 敵キャラにゲームシーンを渡す
 	enemy->SetGameScene(this);
 	enemys_.push_back(enemy);
+	
 }
