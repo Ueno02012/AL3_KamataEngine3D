@@ -32,6 +32,7 @@ GameScene::~GameScene() {
 	delete titleModel_;
 	delete gameoverModel_;
 	delete clearModel_;
+	delete sprite_;
 }
 
 void GameScene::Initialize() {
@@ -58,21 +59,14 @@ void GameScene::Initialize() {
 	titleModel_ = Model::CreateFromOBJ("Title", true);
 	gameoverModel_ = Model::CreateFromOBJ("GAMEOVER", true);
 	clearModel_ = Model::CreateFromOBJ("GAMEClEAR", true);
-
+	textureHandle1_ = TextureManager::Load("Titleback.png");
+	textureHandle2_ = TextureManager::Load("Clearback.png");
+	textureHandle3_ = TextureManager::Load("Overback.png");
 
 	BGM_ = audio_->LoadWave("BGM.wav");
-
-	// UIテクスチャの読み込み
-	hpBarBackgroundHandle_ = TextureManager::Load("HPBarBackground.png");
-	hpBarHandle_ = TextureManager::Load("HPBar.png");
-
-	// 自機HPバーの生成
-	playerHpBarBackground_ = Sprite::Create(hpBarBackgroundHandle_, {50, 50});
-	playerHpBar_ = Sprite::Create(hpBarHandle_, {60, 60}); // 背景より少し内側に配置
-
-	// 敵HPバーの生成
-	enemyHpBarBackground_ = Sprite::Create(hpBarBackgroundHandle_, {50, 100});
-	enemyHpBar_ = Sprite::Create(hpBarHandle_, {60, 110});
+	sprite_ = Sprite::Create(textureHandle1_, {0, 0});
+	sprite1_ = Sprite::Create(textureHandle2_, {0, 0});
+	sprite2_ = Sprite::Create(textureHandle3_, {0, 0});
 
 	// ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -308,14 +302,16 @@ void GameScene::Draw() {
 
 	switch (gameState_) {
 	case GameScene::GameState::Title:
+		sprite_->Draw();
 		break;
 	case GameScene::GameState::Play:
 		break;
 	case GameScene::GameState::Clear:
 		// 2Dの背景を出す場所
-
+		sprite1_->Draw();
 		break;
 	case GameScene::GameState::GameOver:
+		sprite2_->Draw();
 		break;
 	default:
 		break;

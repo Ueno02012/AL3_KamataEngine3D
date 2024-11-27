@@ -143,14 +143,12 @@ private: // メンバ変数
 	Model* clearModel_ = nullptr;
 	Model* gameoverModel_ = nullptr;
 
-	// UIスプライト
-	uint32_t hpBarBackgroundHandle_; // HPバー背景
-	uint32_t hpBarHandle_;           // HPバー
-	Sprite* playerHpBarBackground_;  // 自機HPバー背景スプライト
-	Sprite* playerHpBar_;            // 自機HPバースプライト
-	Sprite* enemyHpBarBackground_;   // 敵HPバー背景スプライト
-	Sprite* enemyHpBar_;             // 敵HPバースプライト
-
+	uint32_t textureHandle1_ = 0;
+	uint32_t textureHandle2_ = 0;
+	uint32_t textureHandle3_ = 0;
+	Sprite* sprite_ = nullptr;
+	Sprite* sprite1_ = nullptr;
+	Sprite* sprite2_ = nullptr;
 	bool isEnemySpawned_ = false; // 敵が生成されたかどうかを管理するフラグ
 
 	uint32_t BGM_ = 0;

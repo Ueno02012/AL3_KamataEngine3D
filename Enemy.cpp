@@ -1,6 +1,6 @@
 #include "Enemy.h"
 #include "Player.h"
-#include <imgui.h>
+//#include <imgui.h>
 
 void Enemy::OnCollision() { 
 	hp_ -= 10;
@@ -93,9 +93,9 @@ void Enemy::Update() {
 	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 	// 行列を定数バッファに転送
 	worldTransform_.TransferMatrix();
-	ImGui::Begin("Enemy");
-	ImGui::DragFloat3("Enemy", &worldTransform_.translation_.x, 0.01f);
-	ImGui::End();
+	//ImGui::Begin("Enemy");
+	//ImGui::DragFloat3("Enemy", &worldTransform_.translation_.x, 0.01f);
+	//ImGui::End();
 }
 
 

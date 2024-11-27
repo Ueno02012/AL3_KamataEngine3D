@@ -20,7 +20,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// ゲームウィンドウの作成
 	win = WinApp::GetInstance();
-	win->CreateGameWindow(L"DEMO");
+	win->CreateGameWindow(L"2262_スペースシューティング");
 
 	// DirectX初期化処理
 	dxCommon = DirectXCommon::GetInstance();
